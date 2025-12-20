@@ -1,0 +1,1 @@
+Kullanıcıdan test verileri alıp bu verileri kullanarak önemsiz nöronları Neuron Coverage ile tespit edeceğiz. pruning_ratio alacağız. coverage_metric olarak sadece neuron coverage olacak. coverage_weight ve magnitude_weight gibi değerler almayacağız. Kod yazmadan önce nasıl yapacağını anlat

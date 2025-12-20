@@ -1,0 +1,17 @@
+Şimdi senden test senaryosu oluşturmanı istiyorum.
+Kullanılacak model: ResNet-18
+Kullanıcılacak dataset: CIFAR-10
+Test Senaryosu Numarası: TS1
+Test senaryosu isim formatı: {TestScenarioNo}_{MethodName}_{ModelName}_{DatasetName}
+Modelin indirileceği dizin: downloaded_models/
+Datasetin indirileceği dizin: downloaded_datasets/
+Test senaryosu sonucu eğitilen modellerin checkpointlerinin kaydedileceği klasör: checkpoints/{TestScenarioNo}/{ModelName}_{DatasetName}_{FT?/FTAP?}_{EpochNo} --> Not: {FT?/FTAP?} ifadesi FineTuning sonrası (FT?) mı yoksa Pruning sonrası FineTuning (FTAP) mi olduğunu belirten ektir. Eğer FTAP ise buna ek olarak _{Method} gelmeli ve Neuron Coverage ise NC, Wanda ise W eki getirilmeli.
+Test senaryosu scriptlerinin kaydedileceği klasör: {test_scenarios}
+Pruning sonrası üretilen raporun kaydedileceği klasör: checkpoints/{test senaryosu isim format}
+
+Yukardaki bilgileri kullanarak bana 3 adet script hazırlamanı istiyorum.
+1) Modelin Pytorchdan pretrained olarak indirileceği scripttir. Bu scriptte aynı zamanda dataset de indirilmelidir. Model datasete uygun hale getirilmelidir. İndirme işlemleri tamamlandıktan sonra modelin accuracy değeri ölçülüp yeteri kadar fine-tuning işlemi yapılmalı ve model kullanıma hazır hale getirilmeli. Bu işlem esnasında her 5 epochta bir model kaydedilmelidir. Nihai output olarak modelin fine-tuningden once ve sonraki accuracy değerlerinin karlılaştırmaları tablo olarak print edilmelidir.
+
+2) Daha once kaydedilen orjinal model (fine tuning uygulanmış model) load edilmeli, accuracy değeri ölçülmeli. Daha sonrasında pruning uygulanmalı. Pruning uygulanırken kullanılan metot Neuron Coverage yöntemi olmalı. Pruning uygulanırken test datasetinden bir kısım girdi verilmeli ve bu girdiler kullanılarak pruning uygulanmalı. Pruning uygulandıktan sonra pruning uygulanmış modele yeteri kadar fine-tuning uygulanıp modelin doğruluğunu tekrar kazanması sağlanmalı. En son çıktı olarak bir tabloda before-after karşılaştırmaları yapılmalı. Bu karşılaştırmalarda ilk load edilen model (fine tune edilmiş hazır pretrained model), pruning uygulanan model, pruning sonrası fine-tuning uygulanan modellerin karşılaştırmaları verilmeli. Özet bir tablo sunulmalı ve bu tabloda Accuracy, Size (MB), Gerçekleştirilen Aritmetik İşlem Sayısı, Average Inference Time (ms) gibi bilgilerin karşılaştırmalı özet tablosu verilmeli.
+
+3) Daha once kaydedilen orjinal model (fine tuning uygulanmış model load) edilmeli, accuracy değeri ölçülmeli. Daha sonrasında pruning uygulanmalı. Pruning uygulanırken kullanılan metot Wanda yöntemi olmalı. Pruning uygulanırken eğer gerekiyorsa test datasetinden bir kısım girdi verilmeli ve bu girdiler kullanılarak pruning uygulanmalı. Pruning uygulandıktan sonra pruning uygulanmış modele yeteri kadar fine-tuning uygulanıp modelin doğruluğunu tekrar kazanması sağlanmalı. En son çıktı olarak bir tabloda before-after karşılaştırmaları yapılmalı. Bu karşılaştırmalarda ilk load edilen model (fine tune edilmiş hazır pretrained model), pruning uygulanan model, pruning sonrası fine-tuning uygulanan modellerin karşılaştırmaları verilmeli. Özet bir tablo sunulmalı ve bu tabloda Accuracy, Size (MB), Gerçekleştirilen Aritmetik İşlem Sayısı, Average Inference Time (ms) gibi bilgilerin karşılaştırmalı özet tablosu verilmeli.
