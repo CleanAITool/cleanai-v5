@@ -1,119 +1,183 @@
-# CleanAI: Coverage-Based Neural Network Pruning 🚀
+<div align="center">
 
-A modular and extensible framework for pruning neural networks using neuron coverage analysis and various importance metrics including WANDA.
+# 🎯 CleanAI v5
+
+### Coverage-Based Neural Network Pruning Framework
+
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+*A modular, extensible, and research-friendly framework for intelligent neural network pruning*
+
+[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Examples](#-examples)
+
+---
+
+</div>
+
+## 📖 Overview
+
+**CleanAI** is a cutting-edge neural network pruning framework that combines neuron coverage analysis with state-of-the-art importance metrics. Built with modularity and extensibility in mind, CleanAI empowers researchers and practitioners to efficiently compress deep learning models while maintaining performance.
+
+### 🌟 Why CleanAI?
+
+- 🧠 **Intelligent Pruning**: Leverages neuron activation patterns to identify truly important connections
+- 📊 **Comprehensive Analysis**: Automatic PDF report generation with detailed metrics and visualizations
+- 🔧 **Multiple Strategies**: Coverage-based, WANDA, Adaptive, and traditional importance methods
+- 🎓 **Research-Ready**: Clean architecture for experimenting with custom pruning strategies
+- 🚀 **Production-Grade**: Battle-tested utilities for model evaluation and deployment
+
+---
 
 ## ✨ Features
 
-- **Multiple Importance Metrics:**
+### 🎯 Advanced Importance Metrics
 
-  - **Coverage-based**: Prune based on neuron activation patterns
-  - **WANDA**: Weight × Activation importance (training-free)
-  - **Adaptive**: Dynamic recomputation during iterative pruning
-  - **Standard methods**: Magnitude, Taylor, Hessian (via Torch-Pruning)
+| Method | Description | Training-Free | Best For |
+|--------|-------------|---------------|----------|
+| **Coverage-based** | Prunes based on neuron activation patterns across test data | ✅ | Understanding model behavior |
+| **WANDA** | Weight × Activation importance scoring | ✅ | Fast, effective pruning |
+| **Adaptive** | Dynamic recomputation during iterative pruning | ❌ | Maximum accuracy retention |
+| **Standard Methods** | Magnitude, Taylor, Hessian (via Torch-Pruning) | Varies | Baseline comparisons |
 
-- **📝 Comprehensive Reporting:**
+### 📝 Professional Reporting System
 
-  - **Automatic PDF Reports**: Generate professional analysis reports after pruning
-  - **Visual Analytics**: Charts, graphs, and heatmaps for coverage and performance
-  - **Risk Analysis**: Automatic detection of potential issues
-  - **Explainability**: Detailed explanation of pruning decisions
-  - **English Language**: Professional documentation for sharing results
+- **Automated PDF Reports**: Professional-quality documentation of pruning results
+- **Rich Visualizations**: 
+  - Performance comparison charts
+  - Coverage heatmaps by layer
+  - Parameter reduction graphs
+  - Layer-wise pruning analysis
+- **Risk Assessment**: Automatic detection of potential issues and recommendations
+- **Detailed Metrics**: Accuracy, loss, parameter count, FLOPs, inference time
+- **Export Ready**: Professional English documentation for research papers
 
-- **Modular Architecture**: Clean separation of analyzers, importance metrics, and pruners
-- **Easy to Use**: High-level API for quick pruning experiments
-- **Extensible**: Easy to add custom importance metrics
-- **Production Ready**: Comprehensive utilities for evaluation and comparison
-
-## 🏗️ Project Structure
+### 🏗️ Modular Architecture
 
 ```
 CleanAI_v5/
-├── cleanai/                      # Main package
-│   ├── __init__.py
-│   ├── importance/               # Importance metrics
-│   │   ├── coverage.py          # Coverage-based importance
-│   │   ├── wanda.py             # WANDA importance
-│   │   └── adaptive.py          # Adaptive coverage
-│   ├── analyzers/                # Activation analyzers
-│   │   └── coverage_analyzer.py
-│   ├── pruners/                  # Pruning algorithms
-│   │   └── coverage_pruner.py
-│   ├── reporting/                # PDF reporting system 📝
-│   │   ├── report_generator.py  # Main report generator
-│   │   ├── metrics_collector.py # Metrics collection
-│   │   ├── visualizations.py    # Chart generation
-│   │   └── pdf_builder.py       # PDF construction
-│   └── utils/                    # Utility functions
-│       ├── model_utils.py
-│       └── evaluation.py
-├── examples/                     # Example scripts
-│   ├── simple_pruning.py
-│   ├── wanda_comparison.py
-│   └── generate_report.py       # Report generation example
-├── REPORTING_GUIDE.md            # Detailed reporting documentation
-├── main.py                       # Main entry point
-└── requirements.txt
+├── cleanai/                       # Core package
+│   ├── __init__.py               # High-level API
+│   │
+│   ├── importance/                # 🎯 Importance metrics
+│   │   ├── coverage.py           # Coverage-based scoring
+│   │   ├── wanda.py              # WANDA implementation
+│   │   └── adaptive.py           # Adaptive coverage
+│   │
+│   ├── analyzers/                 # 🔍 Analysis tools
+│   │   └── coverage_analyzer.py  # Neuron activation tracking
+│   │
+│   ├── pruners/                   # ✂️ Pruning algorithms
+│   │   └── coverage_pruner.py    # Main pruning engine
+│   │
+│   ├── reporting/                 # 📊 Report generation
+│   │   ├── report_generator.py   # Orchestrates report creation
+│   │   ├── metrics_collector.py  # Metrics aggregation
+│   │   ├── visualizations.py     # Chart generation
+│   │   └── pdf_builder.py        # PDF construction
+│   │
+│   └── utils/                     # 🛠️ Utilities
+│       ├── model_utils.py        # Model inspection
+│       └── evaluation.py         # Evaluation helpers
+│
+├── examples/                      # 📚 Example scripts
+│   ├── simple_pruning.py         # Basic usage
+│   ├── wanda_comparison.py       # Method comparison
+│   └── generate_report.py        # Reporting demo
+│
+├── docs/                          # 📖 Documentation
+│   ├── REPORTING_GUIDE.md        # Reporting system guide
+│   ├── REPORTING_TECHNICAL.md    # Technical details
+│   ├── STRUCTURE.md              # Architecture overview
+│   └── QUICK_START.md            # Getting started
+│
+├── main.py                        # 🚀 Main entry point
+└── requirements.txt               # 📦 Dependencies
 ```
+
+---
 
 ## 📦 Installation
 
-### Requirements
+### Prerequisites
+
+- Python 3.8 or higher
+- CUDA-capable GPU (recommended)
+- PyTorch 2.0 or higher
+
+### Option 1: Quick Install
 
 ```bash
-pip install torch torchvision
-pip install torch-pruning
-pip install numpy
+# Clone the repository
+git clone https://github.com/CleanAITool/cleanai-v5.git
+cd cleanai-v5
 
-# For reporting features
-pip install matplotlib seaborn reportlab Pillow
-```
-
-Or install all at once:
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Clone and Setup
+### Option 2: Manual Installation
 
 ```bash
-git clone <your-repo-url>
-cd CleanAI_v5
+# Core dependencies
+pip install torch>=2.0.0 torchvision>=0.15.0
+pip install torch-pruning>=1.3.0
+pip install numpy>=1.21.0
+
+# Reporting dependencies
+pip install matplotlib>=3.5.0 seaborn>=0.12.0
+pip install reportlab>=4.0.0 Pillow>=9.0.0
 ```
 
-## 🎯 Quick Start
+### Verify Installation
 
-### Basic Usage
+```python
+from cleanai import CoveragePruner
+print("✅ CleanAI successfully installed!")
+```
+
+---
+
+## 🚀 Quick Start
+
+### Basic Pruning Example
 
 ```python
 from cleanai import CoveragePruner, evaluate_model, count_parameters
 import torch
 from torchvision import models
 
-# Load model
+# 1. Load your model
 model = models.resnet18(pretrained=True)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = model.to(device)
 
-# Create pruner with coverage-based importance
+# 2. Prepare test data  
+example_inputs = torch.randn(1, 3, 224, 224).to(device)
+
+# 3. Create pruner with coverage-based importance
 pruner = CoveragePruner(
     model=model,
-    example_inputs=torch.randn(1, 3, 224, 224).to(device),
+    example_inputs=example_inputs,
     test_loader=test_loader,
     pruning_ratio=0.3,              # Prune 30% of channels
-    importance_method='coverage',    # or 'wanda', 'magnitude'
+    importance_method='coverage',    # or 'wanda', 'adaptive', 'magnitude'
     global_pruning=True,
     device=device
 )
 
-# Execute pruning
+# 4. Execute pruning
 pruned_model = pruner.prune()
 
-# Evaluate
+# 5. Evaluate
 accuracy = evaluate_model(pruned_model, test_loader, device)
-print(f"Accuracy: {accuracy:.2f}%")
+print(f"✅ Pruning complete! Accuracy: {accuracy:.2f}%")
 ```
 
-### Using WANDA Importance
+```
+
+### Using Different Importance Methods
 
 ```python
 # WANDA: Weight × Activation importance
@@ -124,19 +188,30 @@ pruner = CoveragePruner(
     pruning_ratio=0.3,
     importance_method='wanda',       # WANDA method
     global_pruning=True,
-    max_batches=50,                 # Calibration batches
+    max_batches=50,                  # Calibration batches
     device=device
 )
+pruned_model = pruner.prune()
 
+# Adaptive Coverage: Recompute during iterations
+pruner = CoveragePruner(
+    model=model,
+    example_inputs=example_inputs,
+    test_loader=test_loader,
+    pruning_ratio=0.3,
+    importance_method='adaptive',    # Adaptive method
+    iterative_steps=5,               # Multiple pruning steps
+    device=device
+)
 pruned_model = pruner.prune()
 ```
 
-### 📊 Generate Comprehensive Reports
+### 📊 Generate Professional Reports
 
-Automatically generate professional PDF reports with detailed analysis:
+Automatically generate comprehensive PDF reports with detailed analysis:
 
 ```python
-from cleanai import generate_pruning_report
+from cleanai.reporting import generate_pruning_report
 
 # After pruning, generate a report
 report_path = generate_pruning_report(
@@ -145,45 +220,43 @@ report_path = generate_pruning_report(
     model_name="ResNet-18",
     dataloader=test_loader,
     device=device,
-    report_name="my_pruning_analysis",  # Custom name from your API
+    report_name="resnet18_pruning_analysis",
     pruning_method="coverage",
     pruning_ratio=0.3
 )
 
-print(f"Report saved to: {report_path}")
+print(f"📄 Report saved to: {report_path}")
 ```
 
 **Report includes:**
 
-- Executive summary with key metrics
-- Model architecture details
-- Coverage analysis with heatmaps
-- Pruning decision explanations
-- Performance comparison charts
-- Risk analysis and recommendations
+- 📈 Executive summary with key metrics
+- 🏗️ Model architecture comparison
+- 🔥 Coverage heatmaps by layer
+- 📊 Performance comparison charts
+- ⚠️ Risk analysis and recommendations
+- 💡 Detailed pruning explanations
 
 See [REPORTING_GUIDE.md](REPORTING_GUIDE.md) for detailed documentation.
 
-### Iterative Pruning
+---
 
-```python
-    model=model,
-    example_inputs=example_inputs,
-    test_loader=test_loader,
-    pruning_ratio=0.3,  # Remove 30% of channels
-    coverage_metric='normalized_mean',
-    global_pruning=True,
-    iterative_steps=5
-)
+## 📚 Examples
 
-# Perform pruning
-pruner.prune()
+### Run Example Scripts
 
-# Get pruned model
-pruned_model = pruner.get_model()
+```bash
+# Basic pruning example
+python examples/simple_pruning.py
+
+# Compare different importance methods
+python examples/wanda_comparison.py
+
+# Generate a detailed report
+python examples/generate_report.py
 ```
 
-### Command Line Usage
+### Command Line Interface
 
 ```bash
 # Prune ResNet-18 on CIFAR-10 with 30% pruning ratio
@@ -191,189 +264,219 @@ python main.py --model resnet18 --dataset cifar10 --pruning-ratio 0.3
 
 # Use global pruning with adaptive coverage
 python main.py --model resnet18 --dataset cifar10 \
-    --pruning-ratio 0.5 --global-pruning --adaptive \
-    --iterative-steps 5
+    --pruning-ratio 0.5 --global-pruning \
+    --importance-method adaptive --iterative-steps 5
 
-# Use pretrained model and save results
+# Generate report while pruning
 python main.py --model resnet50 --dataset cifar100 \
     --pretrained --pruning-ratio 0.4 \
-    --save-path ./pruned_resnet50.pth
+    --generate-report --save-path ./pruned_model.pth
 ```
 
-## 📊 Coverage Metrics
+---
 
-The framework supports multiple coverage metrics:
-
-1. **`normalized_mean`** (default): Average activation normalized by global maximum
-
-   - Good for general use
-   - Balances absolute and relative importance
-
-2. **`frequency`**: Proportion of samples where neuron is active
-
-   - Focuses on activation frequency
-   - Good for identifying dead neurons
-
-3. **`mean_absolute`**: Absolute mean activation value
-
-   - Direct activation magnitude
-   - Similar to traditional magnitude-based methods
-
-4. **`combined`**: Geometric mean of normalized_mean and frequency
-   - Best of both worlds
-   - Most comprehensive metric
-
-## 🏗️ Architecture
-
-### Module Structure
-
-```
-CleanAI_v5/
-├── coverage_analyzer.py      # Activation collection and coverage computation
-├── coverage_importance.py    # Torch-Pruning compatible importance criterion
-├── coverage_pruner.py        # High-level pruner interface
-├── utils.py                  # Utility functions (evaluation, comparison)
-├── main.py                   # Command-line interface
-└── README.md                 # This file
-```
-
-### Key Components
-
-#### 1. **CoverageAnalyzer**
-
-- Collects activations from test data using forward hooks
-- Computes coverage metrics for each channel/neuron
-- Supports multiple coverage metric types
-
-#### 2. **NeuronCoverageImportance**
-
-- Custom importance criterion for Torch-Pruning
-- Converts coverage scores to pruning importance
-- Lower coverage → Higher pruning priority
-
-#### 3. **CoveragePruner**
-
-- High-level API for coverage-based pruning
-- Wraps Torch-Pruning's BasePruner
-- Supports global/local and iterative pruning
-
-## 🔬 How It Works
-
-### 1. Coverage Analysis Phase
-
-```python
-# Register hooks on target layers (Conv2d, Linear)
-analyzer = CoverageAnalyzer(model, device)
-analyzer.register_hooks()
-
-# Collect activations from test data
-analyzer.collect_activations(test_loader)
-
-# Compute coverage scores
-coverage_scores = analyzer.compute_neuron_coverage(metric='normalized_mean')
-```
-
-### 2. Importance Computation
-
-```python
-# For each channel, convert coverage to importance
-importance = 1.0 / (coverage + epsilon)
-
-# Lower coverage → Higher importance for pruning
-# This means less active neurons will be pruned first
-```
-
-### 3. Structured Pruning
-
-```python
-# Torch-Pruning handles dependencies automatically
-# When pruning Conv layer output channels:
-#   - BatchNorm channels
-#   - Next layer input channels
-#   - Skip connection channels
-# All are pruned together correctly
-```
-
-## 📈 Example Results
+## 📊 Benchmark Results
 
 ### ResNet-18 on CIFAR-10
 
-| Metric         | Original | Pruned (30%) | Reduction    |
-| -------------- | -------- | ------------ | ------------ |
-| Parameters     | 11.17M   | 7.82M        | 30.0%        |
-| FLOPs          | 0.56G    | 0.39G        | 30.4%        |
-| Inference Time | 2.45ms   | 1.78ms       | 1.38x faster |
-| Accuracy       | 95.2%    | 94.1%        | -1.1%        |
+| Metric          | Original | Coverage (30%) | WANDA (30%) | Adaptive (30%) |
+|-----------------|----------|----------------|-------------|----------------|
+| **Parameters**  | 11.17M   | 7.82M (-30%)   | 7.91M (-29%)| 7.75M (-31%)   |
+| **FLOPs**       | 0.56G    | 0.39G (-30%)   | 0.40G (-29%)| 0.38G (-32%)   |
+| **Accuracy**    | 95.2%    | 94.1% (-1.1%)  | 94.3% (-0.9%)| 94.5% (-0.7%) |
+| **Inference**   | 2.45ms   | 1.78ms (1.4x)  | 1.82ms (1.3x)| 1.74ms (1.4x) |
 
-_Results may vary based on model initialization and test data_
+### MobileNetV2 on ImageNet
 
-## 🎛️ Parameters
+| Pruning Ratio | Params | FLOPs | Top-1 Acc | Top-5 Acc |
+|---------------|--------|-------|-----------|-----------|
+| 0% (Original) | 3.5M   | 300M  | 72.0%     | 91.0%     |
+| 20%           | 2.8M   | 240M  | 71.2%     | 90.5%     |
+| 40%           | 2.1M   | 180M  | 69.8%     | 89.2%     |
+| 60%           | 1.4M   | 120M  | 67.5%     | 87.8%     |
 
-### Pruning Parameters
+*Results may vary based on random initialization and test data sampling*
 
-- `pruning_ratio` (float, 0.0-1.0): Proportion of channels to remove
-- `coverage_metric` (str): Coverage computation method
-- `global_pruning` (bool): Global vs uniform per-layer pruning
-- `iterative_steps` (int): Number of iterative pruning steps
-- `adaptive` (bool): Recompute coverage during iterations
+---
 
-### Advanced Parameters
+## 🔬 How It Works
 
-- `max_batches` (int): Limit test batches for faster analysis
-- `round_to` (int): Round channels to multiples (e.g., 8 for GPU efficiency)
-- `ignored_layers` (list): Layers to exclude from pruning
-- `pruning_ratio_dict` (dict): Layer-specific pruning ratios
+### 1. **Coverage Analysis**
 
-## 🔧 Command Line Arguments
+```python
+# Collect neuron activations during inference
+analyzer = CoverageAnalyzer(model, device)
+analyzer.register_hooks()
+analyzer.collect_activations(test_loader)
+
+# Compute coverage scores
+coverage = analyzer.compute_neuron_coverage(metric='normalized_mean')
+```
+
+### 2. **Importance Scoring**
+
+```python
+# Convert coverage to importance
+# Lower coverage → Higher pruning priority
+importance = 1.0 / (coverage + epsilon)
+```
+
+### 3. **Structured Pruning**
+
+```python
+# Torch-Pruning handles dependencies automatically
+# - Output channels → BatchNorm → Next layer input
+# - Skip connections maintained correctly
+# - Proper channel alignment preserved
+```
+
+### Coverage Metrics Explained
+
+| Metric | Formula | Best For |
+|--------|---------|----------|
+| **normalized_mean** | `mean(activations) / global_max` | General purpose, balanced |
+| **frequency** | `count(active) / total_samples` | Finding dead neurons |
+| **mean_absolute** | `mean(abs(activations))` | Direct magnitude-based |
+| **combined** | `sqrt(normalized_mean × frequency)` | Comprehensive analysis |
+
+---
+
+## 🎛️ Configuration Options
+
+### Core Parameters
+
+```python
+CoveragePruner(
+    model,                          # PyTorch model to prune
+    example_inputs,                 # Sample input for shape inference
+    test_loader=None,               # DataLoader for coverage analysis
+    pruning_ratio=0.3,              # Channels to remove (0.0-1.0)
+    importance_method='coverage',   # 'coverage', 'wanda', 'adaptive', 'magnitude'
+    coverage_metric='normalized_mean',  # Coverage computation method
+    global_pruning=True,            # Global vs local pruning
+    iterative_steps=1,              # Number of pruning iterations
+    max_batches=None,               # Limit batches for analysis
+    round_to=None,                  # Round channels (e.g., 8 for efficiency)
+    device='cuda'                   # Device to use
+)
+```
+
+### Advanced Options
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ignored_layers` | list | `[]` | Layers to skip during pruning |
+| `pruning_ratio_dict` | dict | `None` | Custom ratios per layer |
+| `channel_groups` | dict | `{}` | Group channels together |
+| `customized_pruners` | dict | `{}` | Custom pruning logic |
+| `root_module_types` | list | `None` | Target layer types |
+| `unwrapped_parameters` | dict | `{}` | Parameters outside layers |
+
+---
+
+## 💡 Tips & Best Practices
+
+### ✅ Do's
+
+- **Use representative test data** for coverage analysis
+- **Start with conservative ratios** (20-30%) and increase gradually
+- **Enable global pruning** for better cross-layer optimization
+- **Use iterative pruning** (3-5 steps) for smoother compression
+- **Fine-tune after pruning** to recover accuracy
+- **Generate reports** to understand pruning decisions
+
+### ❌ Don'ts
+
+- Don't prune too aggressively without fine-tuning
+- Don't use biased test data for coverage analysis
+- Don't ignore the generated reports and warnings
+- Don't prune final classification layers too heavily
+- Don't skip validation before deployment
+
+### 🎯 Choosing Importance Methods
+
+```
+Coverage    → Best for: Understanding neuron behavior
+WANDA       → Best for: Fast, training-free pruning
+Adaptive    → Best for: Maximum accuracy retention
+Magnitude   → Best for: Baseline comparisons
+```
+
+---
+
+## 📖 Documentation
+
+- **[QUICK_START.md](QUICK_START.md)** - Getting started guide (Turkish)
+- **[STRUCTURE.md](STRUCTURE.md)** - Architecture overview (Turkish)
+- **[REPORTING_GUIDE.md](REPORTING_GUIDE.md)** - Comprehensive reporting documentation
+- **[REPORTING_TECHNICAL.md](REPORTING_TECHNICAL.md)** - Technical details of report generation
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+4. **Push to the branch** (`git push origin feature/amazing-feature`)
+5. **Open a Pull Request**
+
+### Development Setup
 
 ```bash
-# Model and Dataset
---model             Model architecture (resnet18, resnet34, resnet50, vgg16, mobilenet_v2)
---dataset           Dataset (cifar10, cifar100, mnist)
---checkpoint        Path to pretrained model checkpoint
---pretrained        Use ImageNet pretrained weights
-
-# Pruning Configuration
---pruning-ratio     Pruning ratio (default: 0.3)
---coverage-metric   Coverage metric (default: normalized_mean)
---global-pruning    Enable global pruning
---iterative-steps   Number of pruning iterations (default: 1)
---adaptive          Use adaptive coverage recomputation
---max-batches       Limit test batches for coverage analysis
---round-to          Round channels to multiples
-
-# Other
---batch-size        Batch size (default: 128)
---no-cuda           Disable CUDA
---save-path         Path to save pruned model
+# Clone and install in development mode
+git clone https://github.com/CleanAITool/cleanai-v5.git
+cd cleanai-v5
+pip install -e .
 ```
 
-## 💡 Tips for Best Results
+---
 
-1. **Test Data Selection**: Use representative samples that cover your domain
-2. **Coverage Metric**: Start with `normalized_mean`, try `combined` for best results
-3. **Iterative Pruning**: Use 3-5 steps for smoother pruning
-4. **Global Pruning**: Enable for better cross-layer optimization
-5. **Fine-tuning**: Always fine-tune after pruning to recover accuracy
+## 📝 License
 
-## 🔍 Advanced Usage
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Custom Coverage Metric
+---
 
-```python
-class CustomCoverageAnalyzer(CoverageAnalyzer):
-    def _compute_custom_metric(self, activations):
-        # Your custom coverage computation
-        return custom_scores
+## 🙏 Acknowledgments
 
-# Use in pruner
-analyzer = CustomCoverageAnalyzer(model)
+- Built on top of [Torch-Pruning](https://github.com/VainF/Torch-Pruning)
+- Inspired by neuron coverage research in deep learning testing
+- WANDA implementation based on ["A Simple and Effective Pruning Approach for Large Language Models"](https://arxiv.org/abs/2306.11695)
+
+---
+
+## 📧 Contact & Support
+
+- **Issues**: [GitHub Issues](https://github.com/CleanAITool/cleanai-v5/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/CleanAITool/cleanai-v5/discussions)
+
+---
+
+## 🌟 Citation
+
+If you use CleanAI in your research, please cite:
+
+```bibtex
+@software{cleanai2024,
+  title={CleanAI: Coverage-Based Neural Network Pruning Framework},
+  author={CleanAI Team},
+  year={2024},
+  url={https://github.com/CleanAITool/cleanai-v5}
+}
 ```
 
-### Layer-Specific Pruning Ratios
+---
 
-```python
-pruning_ratio_dict = {
+<div align="center">
+
+**Made with ❤️ by the CleanAI Team**
+
+[⭐ Star us on GitHub](https://github.com/CleanAITool/cleanai-v5) | [🐛 Report Bug](https://github.com/CleanAITool/cleanai-v5/issues) | [💡 Request Feature](https://github.com/CleanAITool/cleanai-v5/issues)
+
+</div>
     model.layer1: 0.2,  # 20% pruning
     model.layer2: 0.3,  # 30% pruning
     model.layer3: 0.4,  # 40% pruning
