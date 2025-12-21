@@ -12,13 +12,7 @@ Pruning Ratio: %50
 Iterative Steps: 1
 Fine Tuning Epoch After Pruning: Fine Tuning Epoch / 2
 
-NOT: Test senaryosu scriptleri oluşturuldu ve test_scenarios klasörüne kaydedildi:
-- TS1_01_prepare_model.py (Model hazırlama ve fine-tuning)
-- TS1_02_coverage_pruning.py (Neuron Coverage pruning)
-- TS1_03_wanda_pruning.py (WANDA pruning)
-- TS1_run_all.py (Tüm scriptleri sırayla çalıştıran master script)
-- TS1_compare_results.py (Tüm sonuçları karşılaştıran script)
-- TS1_README.md (Detaylı dokümantasyon)
+NOT: Her bir test senaryosu sonucu elde edilen çıktıları test_scenarios/{TestScenarioNo}_Resulst.json isminde dosyaya not et. Eğer model kaydedilmişse veya fine-tune edilmişse tekrar eğitmene gerek yok var olan checpointi yükle.
 
 Yukardaki bilgileri kullanarak bana 3 adet script hazırlamanı istiyorum.
 1) Modelin Pytorchdan pretrained olarak indirileceği scripttir. Bu scriptte aynı zamanda dataset de indirilmelidir. Model datasete uygun hale getirilmelidir. İndirme işlemleri tamamlandıktan sonra modelin accuracy değeri ölçülüp yeteri kadar fine-tuning işlemi yapılmalı ve model kullanıma hazır hale getirilmeli. Bu işlem esnasında her 5 epochta bir model kaydedilmelidir. Nihai output olarak modelin fine-tuningden once ve sonraki accuracy değerlerinin karlılaştırmaları tablo olarak print edilmelidir.
