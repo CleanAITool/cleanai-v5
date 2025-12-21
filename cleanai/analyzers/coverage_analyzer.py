@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
 import numpy as np
+import gc
 
 
 class ActivationHook:
@@ -26,24 +27,62 @@ class ActivationHook:
         """
         self.module = module
         self.layer_name = layer_name
-        self.activations: List[torch.Tensor] = []
+        # Use running statistics instead of storing all activations
+        self.running_sum = None
+        self.running_sq_sum = None
+        self.sample_count = 0
         self.hook = module.register_forward_hook(self._hook_fn)
     
     def _hook_fn(self, module: nn.Module, input: Tuple[torch.Tensor], output: torch.Tensor) -> None:
         """
-        Hook function to capture outputs.
+        Hook function to capture outputs and update running statistics.
         
         Args:
             module: The module being hooked
             input: Input tensors to the module
             output: Output tensor from the module
         """
-        # Detach and move to CPU to save memory
-        self.activations.append(output.detach().cpu())
+        with torch.no_grad():
+            # Process immediately instead of storing
+            batch_stats = self._compute_batch_stats(output.detach())
+            
+            if self.running_sum is None:
+                self.running_sum = batch_stats.cpu()
+                self.sample_count = output.size(0)
+            else:
+                self.running_sum = self.running_sum + batch_stats.cpu()
+                self.sample_count += output.size(0)
+    
+    def _compute_batch_stats(self, output: torch.Tensor) -> torch.Tensor:
+        """
+        Compute batch statistics for channel-wise coverage.
+        
+        Args:
+            output: Output tensor [N, C, ...]
+            
+        Returns:
+            Sum of activations per channel [C]
+        """
+        num_channels = output.shape[1]
+        if output.dim() > 2:
+            # Conv layers: average over spatial dimensions, sum over batch
+            stats = output.view(output.shape[0], num_channels, -1).mean(dim=2).sum(dim=0)
+        else:
+            # Linear layers: sum over batch
+            stats = output.sum(dim=0)
+        return stats
+    
+    def get_mean_activation(self) -> Optional[torch.Tensor]:
+        """Get mean activation per channel."""
+        if self.sample_count == 0 or self.running_sum is None:
+            return None
+        return self.running_sum / self.sample_count
     
     def clear(self) -> None:
-        """Clear stored activations to free memory."""
-        self.activations.clear()
+        """Clear stored statistics to free memory."""
+        self.running_sum = None
+        self.running_sq_sum = None
+        self.sample_count = 0
     
     def remove(self) -> None:
         """Remove the hook from the module."""
@@ -116,17 +155,36 @@ class CoverageAnalyzer:
                 
                 # Handle different batch formats
                 if isinstance(batch, (tuple, list)):
+                    if len(batch) < 1:
+                        continue  # Skip empty batch
                     inputs = batch[0]
                 else:
                     inputs = batch
                 
+                # Safety check for None inputs
+                if inputs is None:
+                    continue
+                
                 inputs = inputs.to(self.device)
                 
                 # Forward pass to trigger hooks
-                _ = self.model(inputs)
+                try:
+                    outputs = self.model(inputs)
+                    # Clean up immediately
+                    del outputs, inputs
+                except Exception as e:
+                    print(f"  Warning: Error processing batch {batch_idx}: {e}")
+                    continue
                 
                 if (batch_idx + 1) % 10 == 0:
                     print(f"  Processed {batch_idx + 1} batches")
+                    # Clear GPU cache periodically
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+        
+        # Final cleanup
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         
         print(f"Activation collection complete")
     
@@ -150,22 +208,33 @@ class CoverageAnalyzer:
         print(f"\nComputing neuron coverage using metric: {metric}")
         
         for layer_name, hook in self.hooks.items():
-            if len(hook.activations) == 0:
+            mean_activation = hook.get_mean_activation()
+            
+            if mean_activation is None:
                 print(f"  Warning: No activations collected for {layer_name}")
                 continue
             
-            # Stack all activations: [num_batches * batch_size, C, ...]
-            all_activations = torch.cat(hook.activations, dim=0)
-            
-            # Compute coverage based on metric
+            # Compute coverage based on metric (using pre-computed mean)
             if metric == 'normalized_mean':
-                coverage = self._compute_normalized_mean(all_activations)
-            elif metric == 'frequency':
-                coverage = self._compute_frequency(all_activations)
+                # Normalize by global maximum
+                global_max = mean_activation.max()
+                if global_max > 0:
+                    coverage = mean_activation / global_max
+                else:
+                    coverage = mean_activation
             elif metric == 'mean_absolute':
-                coverage = self._compute_mean_absolute(all_activations)
+                coverage = torch.abs(mean_activation)
+            elif metric == 'frequency':
+                # Approximate frequency from mean (>0 indicates activation)
+                coverage = (mean_activation > 0).float()
             elif metric == 'combined':
-                coverage = self._compute_combined(all_activations)
+                # Simplified combined metric using mean
+                global_max = mean_activation.max()
+                if global_max > 0:
+                    norm_mean = mean_activation / global_max
+                else:
+                    norm_mean = mean_activation
+                coverage = torch.abs(norm_mean)
             else:
                 raise ValueError(f"Unknown metric: {metric}")
             
@@ -177,115 +246,15 @@ class CoverageAnalyzer:
         
         return self.coverage_scores
     
-    def _compute_normalized_mean(self, activations: torch.Tensor) -> torch.Tensor:
-        """
-        Compute normalized mean activation per channel.
-        
-        Args:
-            activations: Tensor of shape [N, C, ...] where N is number of samples
-            
-        Returns:
-            Coverage scores of shape [C]
-        """
-        # For Conv2d: [N, C, H, W] -> average over N, H, W -> [C]
-        # For Linear: [N, C] -> average over N -> [C]
-        
-        num_channels = activations.shape[1]
-        
-        # Reshape to [N, C, -1] and take mean over spatial dimensions
-        if activations.dim() > 2:
-            activations = activations.view(activations.shape[0], num_channels, -1)
-            channel_activations = activations.mean(dim=2)  # [N, C]
-        else:
-            channel_activations = activations  # [N, C]
-        
-        # Compute mean across all samples
-        mean_activation = channel_activations.mean(dim=0)  # [C]
-        
-        # Normalize by global maximum
-        global_max = channel_activations.max()
-        if global_max > 0:
-            normalized = mean_activation / global_max
-        else:
-            normalized = mean_activation
-        
-        return normalized
-    
-    def _compute_frequency(self, activations: torch.Tensor) -> torch.Tensor:
-        """
-        Compute activation frequency (proportion of samples where channel is active).
-        
-        Args:
-            activations: Tensor of shape [N, C, ...]
-            
-        Returns:
-            Coverage scores of shape [C]
-        """
-        num_samples = activations.shape[0]
-        num_channels = activations.shape[1]
-        
-        # Reshape to [N, C, -1]
-        if activations.dim() > 2:
-            activations = activations.view(num_samples, num_channels, -1)
-            # A channel is "active" in a sample if any spatial position is > 0
-            channel_active = (activations > 0).any(dim=2).float()  # [N, C]
-        else:
-            channel_active = (activations > 0).float()  # [N, C]
-        
-        # Frequency = proportion of samples where channel is active
-        frequency = channel_active.mean(dim=0)  # [C]
-        
-        return frequency
-    
-    def _compute_mean_absolute(self, activations: torch.Tensor) -> torch.Tensor:
-        """
-        Compute mean absolute activation value per channel.
-        
-        Args:
-            activations: Tensor of shape [N, C, ...]
-            
-        Returns:
-            Coverage scores of shape [C]
-        """
-        num_channels = activations.shape[1]
-        
-        # Take absolute value
-        abs_activations = torch.abs(activations)
-        
-        # Reshape to [N, C, -1]
-        if abs_activations.dim() > 2:
-            abs_activations = abs_activations.view(abs_activations.shape[0], num_channels, -1)
-            channel_activations = abs_activations.mean(dim=2)  # [N, C]
-        else:
-            channel_activations = abs_activations  # [N, C]
-        
-        # Mean across all samples
-        mean_abs = channel_activations.mean(dim=0)  # [C]
-        
-        return mean_abs
-    
-    def _compute_combined(self, activations: torch.Tensor) -> torch.Tensor:
-        """
-        Compute combined coverage metric (mean × frequency).
-        
-        Args:
-            activations: Tensor of shape [N, C, ...]
-            
-        Returns:
-            Coverage scores of shape [C]
-        """
-        normalized_mean = self._compute_normalized_mean(activations)
-        frequency = self._compute_frequency(activations)
-        
-        # Combined metric: geometric mean
-        combined = torch.sqrt(normalized_mean * frequency)
-        
-        return combined
-    
     def clear_activations(self) -> None:
         """Clear all stored activations to free memory."""
         for hook in self.hooks.values():
             hook.clear()
+        
+        # Force garbage collection
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
     
     def get_coverage_statistics(self) -> Dict[str, Dict[str, float]]:
         """

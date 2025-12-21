@@ -46,7 +46,7 @@ REPORT_DIR = Path(rf"C:\source\checkpoints\{TEST_SCENARIO_NAME}\reports")
 PRUNING_RATIO = 0.2  # Remove 20% of channels
 GLOBAL_PRUNING = True
 ITERATIVE_STEPS = 1
-MAX_BATCHES = 50  # Calibration batches for WANDA
+MAX_BATCHES = 20  # Calibration batches for WANDA (reduced for memory efficiency)
 
 # Fine-tuning parameters (after pruning)
 FINE_TUNE_EPOCHS = 10
@@ -83,8 +83,10 @@ def get_cifar10_dataloaders(batch_size: int, num_workers: int) -> Tuple[DataLoad
     train_dataset = datasets.CIFAR10(root=str(DATASET_DIR), train=True, download=True, transform=transform_train)
     test_dataset = datasets.CIFAR10(root=str(DATASET_DIR), train=False, download=True, transform=transform_test)
     
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    # Windows fix: disable pin_memory on CPU, use 0 workers
+    pin_mem = torch.cuda.is_available()
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_mem)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_mem)
     
     return train_loader, test_loader
 
@@ -111,10 +113,17 @@ def load_finetuned_model() -> nn.Module:
         )
     
     checkpoint = torch.load(checkpoint_path, map_location=DEVICE)
+    
+    if checkpoint is None:
+        raise RuntimeError(f"Failed to load checkpoint from {checkpoint_path}")
+    
+    if 'model_state_dict' not in checkpoint:
+        raise RuntimeError(f"Checkpoint does not contain 'model_state_dict' key")
+    
     model.load_state_dict(checkpoint['model_state_dict'])
     
     print(f"✓ Model loaded from: {checkpoint_path.name}")
-    print(f"✓ Checkpoint accuracy: {checkpoint['accuracy']:.2f}%")
+    print(f"✓ Checkpoint accuracy: {checkpoint.get('accuracy', 0.0):.2f}%")
     
     return model
 

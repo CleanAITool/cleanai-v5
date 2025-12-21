@@ -315,10 +315,16 @@ class CoveragePruner:
             for batch_idx, batch in enumerate(val_loader):
                 # Handle different batch formats
                 if isinstance(batch, (tuple, list)):
+                    if len(batch) < 2:
+                        continue  # Skip invalid batch
                     inputs, targets = batch[0], batch[1]
                 else:
                     inputs = batch
                     targets = None
+                
+                # Safety check for None inputs
+                if inputs is None:
+                    continue
                 
                 inputs = inputs.to(self.device)
                 if targets is not None:

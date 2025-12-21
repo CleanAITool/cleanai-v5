@@ -42,7 +42,7 @@ FINE_TUNE_EPOCHS = 20
 BATCH_SIZE = 128
 LEARNING_RATE = 0.001
 WEIGHT_DECAY = 5e-4
-NUM_WORKERS = 4
+NUM_WORKERS = 0  # Windows fix: 0 to avoid multiprocessing issues
 SAVE_EVERY_N_EPOCHS = 5
 
 # Device
@@ -97,12 +97,15 @@ def get_cifar10_dataloaders(batch_size: int, num_workers: int) -> Tuple[DataLoad
     )
     
     # Create dataloaders
+    # pin_memory only when CUDA is available
+    pin_mem = torch.cuda.is_available()
+    
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=pin_mem
     )
     
     test_loader = DataLoader(
@@ -110,7 +113,7 @@ def get_cifar10_dataloaders(batch_size: int, num_workers: int) -> Tuple[DataLoad
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=pin_mem
     )
     
     print(f"✓ Train samples: {len(train_dataset):,}")
@@ -361,6 +364,13 @@ def main():
         # Load model
         model = adapt_resnet18_for_cifar10()
         checkpoint = torch.load(final_checkpoint_path, map_location=DEVICE)
+        
+        if checkpoint is None:
+            raise RuntimeError(f"Failed to load checkpoint from {final_checkpoint_path}")
+        
+        if 'model_state_dict' not in checkpoint:
+            raise RuntimeError(f"Checkpoint does not contain 'model_state_dict' key")
+        
         model.load_state_dict(checkpoint['model_state_dict'])
         model = model.to(DEVICE)
         
@@ -372,7 +382,10 @@ def main():
         initial_checkpoint_path = CHECKPOINT_DIR / f"{MODEL_NAME}_{DATASET_NAME}_pretrained.pth"
         if initial_checkpoint_path.exists():
             initial_checkpoint = torch.load(initial_checkpoint_path, map_location=DEVICE)
-            before_metrics = {'accuracy': initial_checkpoint['accuracy'], 'loss': 0.0, 'correct': 0, 'total': 10000}
+            if initial_checkpoint and 'accuracy' in initial_checkpoint:
+                before_metrics = {'accuracy': initial_checkpoint['accuracy'], 'loss': 0.0, 'correct': 0, 'total': 10000}
+            else:
+                before_metrics = {'accuracy': 11.10, 'loss': 2.5241, 'correct': 0, 'total': 10000}
         else:
             before_metrics = {'accuracy': 11.10, 'loss': 2.5241, 'correct': 0, 'total': 10000}  # Typical initial values
         

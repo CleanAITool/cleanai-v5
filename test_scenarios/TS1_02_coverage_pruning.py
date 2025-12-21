@@ -47,7 +47,7 @@ PRUNING_RATIO = 0.2  # Remove 20% of channels
 COVERAGE_METRIC = 'normalized_mean'
 GLOBAL_PRUNING = True
 ITERATIVE_STEPS = 1
-MAX_BATCHES = 50  # Use subset of test data for coverage analysis
+MAX_BATCHES = 20  # Use subset of test data for coverage analysis (reduced for memory efficiency)
 
 # Fine-tuning parameters (after pruning)
 FINE_TUNE_EPOCHS = 10
@@ -84,8 +84,10 @@ def get_cifar10_dataloaders(batch_size: int, num_workers: int) -> Tuple[DataLoad
     train_dataset = datasets.CIFAR10(root=str(DATASET_DIR), train=True, download=True, transform=transform_train)
     test_dataset = datasets.CIFAR10(root=str(DATASET_DIR), train=False, download=True, transform=transform_test)
     
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    # Windows fix: disable pin_memory on CPU, use 0 workers
+    pin_mem = torch.cuda.is_available()
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_mem)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_mem)
     
     return train_loader, test_loader
 
@@ -112,10 +114,17 @@ def load_finetuned_model() -> nn.Module:
         )
     
     checkpoint = torch.load(checkpoint_path, map_location=DEVICE)
+    
+    if checkpoint is None:
+        raise RuntimeError(f"Failed to load checkpoint from {checkpoint_path}")
+    
+    if 'model_state_dict' not in checkpoint:
+        raise RuntimeError(f"Checkpoint does not contain 'model_state_dict' key")
+    
     model.load_state_dict(checkpoint['model_state_dict'])
     
     print(f"✓ Model loaded from: {checkpoint_path.name}")
-    print(f"✓ Checkpoint accuracy: {checkpoint['accuracy']:.2f}%")
+    print(f"✓ Checkpoint accuracy: {checkpoint.get('accuracy', 0.0):.2f}%")
     
     return model
 
@@ -139,6 +148,13 @@ def measure_accuracy(model: nn.Module, test_loader: DataLoader) -> Dict[str, flo
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
+            
+            # Clean up batch tensors
+            del inputs, targets, outputs, loss, predicted
+    
+    # Clear GPU cache
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     
     accuracy = 100.0 * correct / total
     avg_loss = total_loss / total
@@ -168,16 +184,22 @@ def measure_inference_time(model: nn.Module, test_loader: DataLoader, num_batche
             
             # Warm up
             if i < 3:
-                _ = model(inputs)
+                outputs = model(inputs)
+                del outputs, inputs
                 continue
             
             # Measure
             start = time.time()
-            _ = model(inputs)
+            outputs = model(inputs)
             torch.cuda.synchronize() if torch.cuda.is_available() else None
             end = time.time()
             
             times.append((end - start) * 1000 / inputs.size(0))  # ms per sample
+            del outputs, inputs
+    
+    # Clear GPU cache
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     
     return sum(times) / len(times) if times else 0.0
 
@@ -343,8 +365,8 @@ def main():
     print("Measuring Original Model Metrics")
     print("="*60)
     
-    import copy
-    original_model = copy.deepcopy(original_model_full)
+    # No need for deep copy - just use reference
+    original_model = original_model_full
     
     original_accuracy = measure_accuracy(original_model_full, test_loader)
     original_params = count_parameters(original_model_full)
