@@ -1,18 +1,21 @@
 Şimdi senden test senaryosu oluşturmanı istiyorum.
-Kullanılacak model: ResNet-18
-Kullanıcılacak dataset: CIFAR-10
-Test Senaryosu Numarası: TS1
+Kullanılacak model: ResNet-50
+Kullanıcılacak dataset: ResNet-50 için kullanılacak uygun model
+Test Senaryosu Numarası: TS2
 Test senaryosu isim formatı: {TestScenarioNo}_{MethodName}_{ModelName}_{DatasetName}
 Modelin indirileceği dizin: C:\source\downloaded_models/
 Datasetin indirileceği dizin: C:\source\downloaded_datasets/
 Test senaryosu sonucu eğitilen modellerin checkpointlerinin kaydedileceği klasör: C:\source\checkpoints/{TestScenarioNo}/{ModelName}_{DatasetName}_{FT?/FTAP?}_{EpochNo} --> Not: {FT?/FTAP?} ifadesi FineTuning sonrası (FT?) mı yoksa Pruning sonrası FineTuning (FTAP) mi olduğunu belirten ektir. Eğer FTAP ise buna ek olarak _{Method} gelmeli ve Neuron Coverage ise NC, Wanda ise W eki getirilmeli.
-Test senaryosu scriptlerinin kaydedileceği klasör: {test_scenarios}/{TestScenarioNo}/{ModelName}_{DatasetName}
+Test senaryosu scriptlerinin kaydedileceği klasör: {test_scenarios}/{TestScenarioNo}_{ModelName}_{DatasetName}
 Pruning sonrası üretilen raporun kaydedileceği klasör: checkpoints/{test senaryosu isim format}
-Pruning Ratio: %50
+Pruning Ratio: %20
+Global Pruning: False
 Iterative Steps: 1
 Fine Tuning Epoch After Pruning: Fine Tuning Epoch / 2
 
 NOT: Her bir test senaryosu sonucu elde edilen çıktıları test_scenarios/{TestScenarioNo}/{ModelName}_{DatasetName}/{TestScenarioNo}_Resulst.json isminde dosyaya not et. Eğer model kaydedilmişse veya fine-tune edilmişse tekrar eğitmene gerek yok var olan checpointi yükle.
+
+NOT: Hiçbir zaman son katmanda pruning uygulamamalı!
 
 Yukardaki bilgileri kullanarak bana 3 adet script hazırlamanı istiyorum.
 1) Modelin Pytorchdan pretrained olarak indirileceği scripttir. Bu scriptte aynı zamanda dataset de indirilmelidir. Model datasete uygun hale getirilmelidir. İndirme işlemleri tamamlandıktan sonra modelin accuracy değeri ölçülüp yeteri kadar fine-tuning işlemi yapılmalı ve model kullanıma hazır hale getirilmeli. Bu işlem esnasında her 5 epochta bir model kaydedilmelidir. Nihai output olarak modelin fine-tuningden once ve sonraki accuracy değerlerinin karlılaştırmaları tablo olarak print edilmelidir.
