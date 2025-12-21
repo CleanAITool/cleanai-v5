@@ -11,17 +11,23 @@ from typing import Dict, Tuple
 from pathlib import Path
 
 
-def count_parameters(model: nn.Module) -> int:
+def count_parameters(model: nn.Module) -> Dict[str, int]:
     """
-    Count total parameters in a model.
+    Count total and trainable parameters in a model.
     
     Args:
         model: PyTorch model
         
     Returns:
-        Total number of parameters
+        Dictionary with 'total' and 'trainable' parameter counts
     """
-    return sum(p.numel() for p in model.parameters())
+    total = sum(p.numel() for p in model.parameters())
+    trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    return {
+        'total': total,
+        'trainable': trainable,
+        'non_trainable': total - trainable
+    }
 
 
 def count_trainable_parameters(model: nn.Module) -> int:

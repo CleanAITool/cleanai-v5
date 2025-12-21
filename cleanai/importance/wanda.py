@@ -215,6 +215,9 @@ class WandaImportance(tp.importance.Importance):
         # Get weight scores
         weight_scores = self._compute_weight_importance(root_module, root_idxs)
         
+        # Ensure both tensors are on the same device
+        channel_activations = channel_activations.to(weight_scores.device)
+        
         # WANDA: Multiply weight magnitude with activation magnitude
         wanda_scores = weight_scores * channel_activations
         

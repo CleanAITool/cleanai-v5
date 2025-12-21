@@ -3,11 +3,22 @@ Kullanılacak model: ResNet-18
 Kullanıcılacak dataset: CIFAR-10
 Test Senaryosu Numarası: TS1
 Test senaryosu isim formatı: {TestScenarioNo}_{MethodName}_{ModelName}_{DatasetName}
-Modelin indirileceği dizin: downloaded_models/
-Datasetin indirileceği dizin: downloaded_datasets/
-Test senaryosu sonucu eğitilen modellerin checkpointlerinin kaydedileceği klasör: checkpoints/{TestScenarioNo}/{ModelName}_{DatasetName}_{FT?/FTAP?}_{EpochNo} --> Not: {FT?/FTAP?} ifadesi FineTuning sonrası (FT?) mı yoksa Pruning sonrası FineTuning (FTAP) mi olduğunu belirten ektir. Eğer FTAP ise buna ek olarak _{Method} gelmeli ve Neuron Coverage ise NC, Wanda ise W eki getirilmeli.
+Modelin indirileceği dizin: C:\source\downloaded_models/
+Datasetin indirileceği dizin: C:\source\downloaded_datasets/
+Test senaryosu sonucu eğitilen modellerin checkpointlerinin kaydedileceği klasör: C:\source\checkpoints/{TestScenarioNo}/{ModelName}_{DatasetName}_{FT?/FTAP?}_{EpochNo} --> Not: {FT?/FTAP?} ifadesi FineTuning sonrası (FT?) mı yoksa Pruning sonrası FineTuning (FTAP) mi olduğunu belirten ektir. Eğer FTAP ise buna ek olarak _{Method} gelmeli ve Neuron Coverage ise NC, Wanda ise W eki getirilmeli.
 Test senaryosu scriptlerinin kaydedileceği klasör: {test_scenarios}
 Pruning sonrası üretilen raporun kaydedileceği klasör: checkpoints/{test senaryosu isim format}
+Pruning Ratio: %50
+Iterative Steps: 1
+Fine Tuning Epoch After Pruning: Fine Tuning Epoch / 2
+
+NOT: Test senaryosu scriptleri oluşturuldu ve test_scenarios klasörüne kaydedildi:
+- TS1_01_prepare_model.py (Model hazırlama ve fine-tuning)
+- TS1_02_coverage_pruning.py (Neuron Coverage pruning)
+- TS1_03_wanda_pruning.py (WANDA pruning)
+- TS1_run_all.py (Tüm scriptleri sırayla çalıştıran master script)
+- TS1_compare_results.py (Tüm sonuçları karşılaştıran script)
+- TS1_README.md (Detaylı dokümantasyon)
 
 Yukardaki bilgileri kullanarak bana 3 adet script hazırlamanı istiyorum.
 1) Modelin Pytorchdan pretrained olarak indirileceği scripttir. Bu scriptte aynı zamanda dataset de indirilmelidir. Model datasete uygun hale getirilmelidir. İndirme işlemleri tamamlandıktan sonra modelin accuracy değeri ölçülüp yeteri kadar fine-tuning işlemi yapılmalı ve model kullanıma hazır hale getirilmeli. Bu işlem esnasında her 5 epochta bir model kaydedilmelidir. Nihai output olarak modelin fine-tuningden once ve sonraki accuracy değerlerinin karlılaştırmaları tablo olarak print edilmelidir.
