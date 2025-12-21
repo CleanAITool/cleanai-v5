@@ -95,10 +95,10 @@ class MetricsCollector:
         
         # Parameters
         params = count_parameters(model)
-        metrics['parameters'] = params
-        metrics['model_size_mb'] = (params * 4) / (1024 * 1024)  # Assuming float32
+        metrics['parameters'] = params['total']
+        metrics['model_size_mb'] = (params['total'] * 4) / (1024 * 1024)  # Assuming float32
         
-        print(f"Parameters: {params:,}")
+        print(f"Parameters: {params['total']:,}")
         print(f"Model Size: {metrics['model_size_mb']:.2f} MB")
         
         # FLOPs
@@ -174,10 +174,10 @@ class MetricsCollector:
         
         # Parameters
         params = count_parameters(model_after)
-        metrics['parameters'] = params
-        metrics['model_size_mb'] = (params * 4) / (1024 * 1024)
+        metrics['parameters'] = params['total']
+        metrics['model_size_mb'] = (params['total'] * 4) / (1024 * 1024)
         
-        print(f"Parameters: {params:,}")
+        print(f"Parameters: {params['total']:,}")
         print(f"Model Size: {metrics['model_size_mb']:.2f} MB")
         
         # FLOPs
@@ -216,7 +216,7 @@ class MetricsCollector:
         
         # Compute reductions
         if before_metrics['parameters'] > 0:
-            metrics['param_reduction_pct'] = ((before_metrics['parameters'] - params) / before_metrics['parameters']) * 100
+            metrics['param_reduction_pct'] = ((before_metrics['parameters'] - params['total']) / before_metrics['parameters']) * 100
         else:
             metrics['param_reduction_pct'] = 0
             
@@ -256,7 +256,7 @@ class MetricsCollector:
         # Compute reductions
         if 'before_pruning' in self.metrics:
             before = self.metrics['before_pruning']
-            metrics['param_reduction_pct'] = ((before['parameters'] - params) / before['parameters']) * 100
+            metrics['param_reduction_pct'] = ((before['parameters'] - params['total']) / before['parameters']) * 100
             metrics['size_reduction_pct'] = ((before['model_size_mb'] - metrics['model_size_mb']) / before['model_size_mb']) * 100
             
             if 'gflops' in before and 'gflops' in metrics:

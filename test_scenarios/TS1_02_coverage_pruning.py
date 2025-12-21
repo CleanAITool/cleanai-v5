@@ -19,9 +19,11 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms, models
 import os
 import time
+import json
 from pathlib import Path
 from typing import Dict, Tuple
 import sys
+from datetime import datetime
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -45,7 +47,7 @@ REPORT_DIR = Path(rf"C:\source\checkpoints\{TEST_SCENARIO_NAME}\reports")
 # Pruning parameters
 PRUNING_RATIO = 0.2  # Remove 20% of channels
 COVERAGE_METRIC = 'normalized_mean'
-GLOBAL_PRUNING = True
+GLOBAL_PRUNING = False  # Use layer-wise pruning to control per-layer pruning ratio
 ITERATIVE_STEPS = 1
 MAX_BATCHES = 20  # Use subset of test data for coverage analysis (reduced for memory efficiency)
 
@@ -280,6 +282,51 @@ def fine_tune_pruned_model(model: nn.Module, train_loader: DataLoader, test_load
             best_acc = test_metrics['accuracy']
     
     return history
+
+
+def save_results_to_json(original_metrics: Dict, pruned_metrics: Dict, final_metrics: Dict, 
+                        scenario_name: str, output_dir: Path):
+    """Save results to JSON file."""
+    results = {
+        'test_scenario': scenario_name,
+        'timestamp': datetime.now().isoformat(),
+        'method': 'Coverage',
+        'pruning_ratio_target': PRUNING_RATIO,
+        'global_pruning': GLOBAL_PRUNING,
+        'coverage_metric': COVERAGE_METRIC,
+        'original_model': {
+            'accuracy': original_metrics['accuracy'],
+            'parameters': original_metrics['params'],
+            'size_mb': original_metrics['size_mb'],
+            'inference_time_ms': original_metrics['inference_time']
+        },
+        'after_pruning': {
+            'accuracy': pruned_metrics['accuracy'],
+            'parameters': pruned_metrics['params'],
+            'size_mb': pruned_metrics['size_mb'],
+            'inference_time_ms': pruned_metrics['inference_time']
+        },
+        'after_finetuning': {
+            'accuracy': final_metrics['accuracy'],
+            'parameters': final_metrics['params'],
+            'size_mb': final_metrics['size_mb'],
+            'inference_time_ms': final_metrics['inference_time']
+        },
+        'summary': {
+            'param_reduction_pct': (1 - pruned_metrics['params'] / original_metrics['params']) * 100,
+            'size_reduction_pct': (1 - pruned_metrics['size_mb'] / original_metrics['size_mb']) * 100,
+            'speedup': original_metrics['inference_time'] / final_metrics['inference_time'],
+            'accuracy_recovery': final_metrics['accuracy'] - pruned_metrics['accuracy'],
+            'final_accuracy_drop': original_metrics['accuracy'] - final_metrics['accuracy']
+        }
+    }
+    
+    json_path = output_dir / f"{scenario_name}.json"
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    
+    print(f"\n✓ Results saved to: {json_path.name}")
+    return json_path
 
 
 def print_comparison_table(original_metrics: Dict, pruned_metrics: Dict, final_metrics: Dict):
@@ -568,7 +615,11 @@ def main():
     except Exception as e:
         print(f"⚠ Report generation failed: {e}")
     
-    # Step 9: Print comparison table
+    # Step 9: Save results to JSON
+    results_dir = Path(__file__).parent
+    save_results_to_json(original_metrics, pruned_metrics, final_metrics, TEST_SCENARIO_NAME, results_dir)
+    
+    # Step 10: Print comparison table
     print_comparison_table(original_metrics, pruned_metrics, final_metrics)
     
     elapsed_time = time.time() - start_time
