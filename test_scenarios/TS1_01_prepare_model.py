@@ -22,6 +22,9 @@ from pathlib import Path
 from typing import Dict, Tuple
 import sys
 
+# Fix OpenMP duplicate library issue
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from cleanai import evaluate_model, count_parameters
