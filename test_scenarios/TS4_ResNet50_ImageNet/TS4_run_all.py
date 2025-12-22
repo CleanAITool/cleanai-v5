@@ -1,5 +1,5 @@
 """
-Test Scenario TS3 - Run All Scripts
+Test Scenario TS4 - Run All Scripts
 Executes all test scenario scripts in sequence.
 """
 
@@ -10,15 +10,15 @@ import time
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS3',
+    'test_scenario': 'TS4',
     'script_dir': os.path.dirname(__file__),
     'scripts': [
-        'TS3_01_prepare_model.py',
-        'TS3_02_coverage_pruning.py',
-        'TS3_03_wanda_pruning.py',
-        'TS3_04_magnitude_pruning.py',
-        'TS3_05_taylor_pruning.py',
-        'TS3_compare_results.py'
+        'TS4_01_prepare_model.py',
+        'TS4_02_coverage_pruning.py',
+        'TS4_03_wanda_pruning.py',
+        'TS4_04_magnitude_pruning.py',
+        'TS4_05_taylor_pruning.py',
+        'TS4_compare_results.py'
     ]
 }
 
@@ -146,3 +146,4 @@ if __name__ == "__main__":
         print("\n\nExecution interrupted by user.")
     except Exception as e:
         print(f"\n\nUnexpected error: {e}")
+

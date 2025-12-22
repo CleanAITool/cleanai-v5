@@ -83,5 +83,67 @@
             "flops": 3344811925.0,
             "fine_tune_epochs": 10
         }
+    },
+    "magnitude_pruning": {
+        "test_scenario": "TS3",
+        "model": "ResNet50",
+        "dataset": "ImageNet",
+        "method": "Magnitude",
+        "script": "TS3_04_magnitude_pruning",
+        "pruning_config": {
+            "ratio": 0.1,
+            "global": false,
+            "iterative_steps": 1
+        },
+        "original": {
+            "accuracy": 78.59471568294097,
+            "size_mb": 97.69538116455078,
+            "inference_time_ms": 0.02253829560070053,
+            "flops": 4133742592.0
+        },
+        "pruned": {
+            "accuracy": 0.36002160129607774,
+            "size_mb": 79.67262268066406,
+            "inference_time_ms": 0.023351001422166066,
+            "flops": 3344811925.0
+        },
+        "final": {
+            "accuracy": 75.4905294317659,
+            "size_mb": 79.67262268066406,
+            "inference_time_ms": 0.013796767696793536,
+            "flops": 3344811925.0,
+            "fine_tune_epochs": 10
+        }
+    },
+    "taylor_pruning": {
+        "test_scenario": "TS3",
+        "model": "ResNet50",
+        "dataset": "ImageNet",
+        "method": "Taylor",
+        "script": "TS3_05_taylor_pruning",
+        "pruning_config": {
+            "ratio": 0.1,
+            "global": false,
+            "iterative_steps": 1
+        },
+        "original": {
+            "accuracy": 78.59471568294097,
+            "size_mb": 97.69538116455078,
+            "inference_time_ms": 0.026411847183034083,
+            "flops": 4133742592.0
+        },
+        "pruned": {
+            "accuracy": 2.4321459287557254,
+            "size_mb": 79.67262268066406,
+            "inference_time_ms": 0.015754742400260115,
+            "flops": 3344811925.0
+        },
+        "final": {
+            "accuracy": 75.30451827109627,
+            "size_mb": 79.67262268066406,
+            "inference_time_ms": 0.01477214129848503,
+            "flops": 3344811925.0,
+            "fine_tune_epochs": 10
+        }
     }
 }

@@ -942,3 +942,293 @@ COMPARISON: WANDA PRUNING RESULTS
 ================================================================================
 SCRIPT COMPLETED SUCCESSFULLY
 ================================================================================
+
+
+
+
+*********************************************
+
+
+
+
+================================================================================
+TEST SCENARIO TS3: MAGNITUDE-BASED PRUNING
+================================================================================
+Model: ResNet50
+Dataset: ImageNet
+Method: Magnitude (Torch-Pruning)
+Device: cuda
+Pruning Ratio: 10.0%
+================================================================================
+
+================================================================================
+LOADING IMAGENET VALIDATION DATASET
+================================================================================
+✓ Dataset loaded
+  - Validation samples: 49997
+  - Training samples (subset): 9999
+
+================================================================================
+LOADING BASELINE MODEL
+================================================================================
+✓ Model loaded from: C:\source\checkpoints\TS3\ResNet50_ImageNet_FT_best.pth
+  - Epoch: 0
+  - Test Accuracy: 78.59%
+
+================================================================================
+EVALUATING ORIGINAL FINE-TUNED MODEL
+================================================================================
+✓ Original Model Accuracy: 78.59%                                                                                      
+✓ Model Size: 97.70 MB
+✓ Average Inference Time: 0.0225 ms
+✓ FLOPs: 4.13 GFLOPs
+
+================================================================================
+APPLYING MAGNITUDE-BASED PRUNING
+================================================================================
+Pruning Ratio: 10.0%
+Global Pruning: False
+Iterative Steps: 1
+Magnitude pruning uses L2 norm of weights to determine importance
+This is Torch-Pruning's most robust baseline method
+Using magnitude-based importance (L2 norm)
+
+Initializing Torch-Pruning with:
+  Importance method: magnitude
+  Pruning ratio: 10.00%
+  Global pruning: False
+  Iterative steps: 1
+  Device: cuda
+
+Applying pruning...
+
+############################################################
+Starting Coverage-Based Pruning
+############################################################
+Initial parameters: 25,557,032
+
+============================================================
+Pruning Step 1/1
+============================================================
+
+Pruning Results:
+  Parameters before: 25,557,032
+  Parameters after:  20,837,770
+  Parameters removed: 4,719,262 (18.47%)
+
+############################################################
+Pruning Complete
+############################################################
+Initial parameters:  25,557,032
+Final parameters:    20,837,770
+Total removed:       4,719,262 (18.47%)
+Target pruning ratio: 10.00%
+✓ Magnitude-based pruning completed
+
+================================================================================
+EVALUATING AFTER PRUNING (BEFORE FINE-TUNING)
+================================================================================
+✓ Pruned Model Accuracy: 0.36%
+✓ Model Size: 79.67 MB
+✓ Average Inference Time: 0.0234 ms
+✓ FLOPs: 3.34 GFLOPs
+
+================================================================================
+FINE-TUNING PRUNED MODEL
+================================================================================
+Fine-tune Epochs: 10
+Epoch 1/10: 100%|████████████████████████████████████████████| 40/40 [02:38<00:00,  3.96s/it, loss=2.2202, acc=56.33%]
+Epoch 1/10 - Train Loss: 2.2202, Train Acc: 56.33%, Test Acc: 70.00%
+Epoch 2/10: 100%|████████████████████████████████████████████| 40/40 [02:40<00:00,  4.00s/it, loss=1.5183, acc=65.23%]
+Epoch 2/10 - Train Loss: 1.5183, Train Acc: 65.23%, Test Acc: 72.43%
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_MAG_epoch2.pth
+Epoch 3/10: 100%|████████████████████████████████████████████| 40/40 [08:21<00:00, 12.54s/it, loss=1.3185, acc=69.81%]
+Epoch 3/10 - Train Loss: 1.3185, Train Acc: 69.81%, Test Acc: 73.47%                                                                                          
+Epoch 4/10: 100%|███████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.41s/it, loss=1.2111, acc=72.47%] 
+Epoch 4/10 - Train Loss: 1.2111, Train Acc: 72.47%, Test Acc: 74.09%
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_MAG_epoch4.pth
+Epoch 5/10: 100%|███████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.41s/it, loss=1.1315, acc=74.82%]
+Epoch 5/10 - Train Loss: 1.1315, Train Acc: 74.82%, Test Acc: 74.59%                                                                                          
+Epoch 6/10: 100%|███████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.40s/it, loss=0.9894, acc=76.67%] 
+Epoch 6/10 - Train Loss: 0.9894, Train Acc: 76.67%, Test Acc: 75.02%
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_MAG_epoch6.pth
+Epoch 7/10: 100%|███████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.41s/it, loss=0.9392, acc=77.98%]
+Epoch 7/10 - Train Loss: 0.9392, Train Acc: 77.98%, Test Acc: 75.27%                                                                                          
+Epoch 8/10: 100%|███████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.40s/it, loss=0.9123, acc=79.03%] 
+Epoch 8/10 - Train Loss: 0.9123, Train Acc: 79.03%, Test Acc: 75.49%                                                                                          
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_MAG_epoch8.pth
+Epoch 9/10: 100%|███████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.41s/it, loss=0.9014, acc=78.90%]
+Epoch 9/10 - Train Loss: 0.9014, Train Acc: 78.90%, Test Acc: 75.57%                                                                                          
+Epoch 10/10: 100%|██████████████████████████████████████████████████████████████████████████████████| 40/40 [02:56<00:00,  4.40s/it, loss=0.8605, acc=79.75%] 
+Epoch 10/10 - Train Loss: 0.8605, Train Acc: 79.75%, Test Acc: 75.49%
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_MAG_epoch10.pth
+
+✓ Best model saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_MAG_best.pth
+  Best Accuracy: 75.57%
+
+================================================================================
+FINAL EVALUATION (AFTER PRUNING + FINE-TUNING)
+================================================================================
+✓ Final Model Accuracy: 75.49%                                                                                                                                
+✓ Model Size: 79.67 MB
+✓ Average Inference Time: 0.0138 ms
+✓ FLOPs: 3.34 GFLOPs
+
+================================================================================
+COMPARISON: MAGNITUDE-BASED PRUNING RESULTS
+================================================================================
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| Metric              |   Original (FT) |   After Pruning |   After FT | Change (Original → Final)   |
++=====================+=================+=================+============+=============================+
+| Accuracy (%)        |         78.59   |          0.36   |    75.49   | -3.10                       |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| Size (MB)           |         97.7    |         79.67   |    79.67   | -18.02 (-18.4%)             |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| Inference Time (ms) |          0.0225 |          0.0234 |     0.0138 | -0.0087                     |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| FLOPs (G)           |          4.13   |          3.34   |     3.34   | -0.79 (-19.1%)              |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+
+✓ Results saved to: C:\source\repos\cleanai-v5\test_scenarios\TS3_ResNet50_ImageNet\TS3_Results.json
+
+================================================================================
+SCRIPT COMPLETED SUCCESSFULLY
+================================================================================
+
+
+
+
+
+****************************************
+
+
+
+
+
+
+================================================================================
+TEST SCENARIO TS3: TAYLOR GRADIENT-BASED PRUNING
+================================================================================
+Model: ResNet50
+Dataset: ImageNet
+Method: Taylor (Gradient-based)
+Device: cuda
+Pruning Ratio: 10.0%
+================================================================================
+
+================================================================================
+LOADING IMAGENET VALIDATION DATASET
+================================================================================
+✓ Dataset loaded
+  - Validation samples: 49997
+  - Training samples (subset): 9999
+  - Calibration samples: 25600
+
+================================================================================
+LOADING BASELINE MODEL
+================================================================================
+✓ Model loaded from: C:\source\checkpoints\TS3\ResNet50_ImageNet_FT_best.pth
+  - Epoch: 0
+  - Test Accuracy: 78.59%
+
+================================================================================
+EVALUATING ORIGINAL FINE-TUNED MODEL
+================================================================================
+✓ Original Model Accuracy: 78.59%                                                                                                            
+✓ Model Size: 97.70 MB
+✓ Average Inference Time: 0.0264 ms
+✓ FLOPs: 4.13 GFLOPs
+
+================================================================================
+APPLYING TAYLOR GRADIENT-BASED PRUNING
+================================================================================
+Pruning Ratio: 10.0%
+Global Pruning: False
+Iterative Steps: 1
+Taylor pruning uses first-order gradient information
+Importance = |weight × gradient| (Taylor expansion approximation)
+Using 100 calibration batches
+
+Computing Taylor importance scores (requires gradients)...
+Computing gradients:  99%|████████████████████████████████████████████████████████████████████████████████▏| 99/100 [11:36<00:07,  7.03s/it] 
+✓ Gradients computed on 100 batches
+Using GroupTaylorImportance
+
+Initializing Torch-Pruning with Taylor importance...
+
+Applying pruning...
+
+✓ Taylor pruning completed
+  Parameters before: 25,557,032
+  Parameters after: 20,837,770
+  Parameters removed: 4,719,262 (18.47%)
+
+================================================================================
+EVALUATING AFTER PRUNING (BEFORE FINE-TUNING)
+================================================================================
+✓ Pruned Model Accuracy: 2.43%                                                                                                               
+✓ Model Size: 79.67 MB
+✓ Average Inference Time: 0.0158 ms
+✓ FLOPs: 3.34 GFLOPs
+
+================================================================================
+FINE-TUNING PRUNED MODEL
+================================================================================
+Fine-tune Epochs: 10
+Epoch 1/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:23<00:00, 11.09s/it, loss=1.9249, acc=58.33%] 
+Epoch 1/10 - Train Loss: 1.9249, Train Acc: 58.33%, Test Acc: 70.24%                                                                         
+Epoch 2/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:22<00:00, 11.07s/it, loss=1.4407, acc=66.76%] 
+Epoch 2/10 - Train Loss: 1.4407, Train Acc: 66.76%, Test Acc: 72.22%                                                                         
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_TAY_epoch2.pth
+Epoch 3/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:23<00:00, 11.08s/it, loss=1.2279, acc=71.24%]
+Epoch 3/10 - Train Loss: 1.2279, Train Acc: 71.24%, Test Acc: 73.15%                                                                         
+Epoch 4/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:25<00:00, 11.14s/it, loss=1.0729, acc=74.69%] 
+Epoch 4/10 - Train Loss: 1.0729, Train Acc: 74.69%, Test Acc: 73.99%                                                                         
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_TAY_epoch4.pth
+Epoch 5/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:23<00:00, 11.08s/it, loss=0.9578, acc=77.05%]
+Epoch 5/10 - Train Loss: 0.9578, Train Acc: 77.05%, Test Acc: 74.41%                                                                         
+Epoch 6/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:22<00:00, 11.06s/it, loss=0.8944, acc=79.10%] 
+Epoch 6/10 - Train Loss: 0.8944, Train Acc: 79.10%, Test Acc: 74.73%                                                                         
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_TAY_epoch6.pth
+Epoch 7/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:22<00:00, 11.07s/it, loss=0.8348, acc=80.64%]
+Epoch 7/10 - Train Loss: 0.8348, Train Acc: 80.64%, Test Acc: 75.06%                                                                         
+Epoch 8/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:22<00:00, 11.07s/it, loss=0.8167, acc=80.78%] 
+Epoch 8/10 - Train Loss: 0.8167, Train Acc: 80.78%, Test Acc: 75.24%                                                                         
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_TAY_epoch8.pth
+Epoch 9/10: 100%|██████████████████████████████████████████████████████████████████| 40/40 [07:22<00:00, 11.06s/it, loss=0.8047, acc=81.82%]
+Epoch 9/10 - Train Loss: 0.8047, Train Acc: 81.82%, Test Acc: 75.27%                                                                         
+Epoch 10/10: 100%|█████████████████████████████████████████████████████████████████| 40/40 [07:22<00:00, 11.06s/it, loss=0.7764, acc=82.10%] 
+Epoch 10/10 - Train Loss: 0.7764, Train Acc: 82.10%, Test Acc: 75.30%                                                                        
+  ✓ Checkpoint saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_TAY_epoch10.pth
+
+✓ Best model saved: C:\source\checkpoints\TS3\ResNet50_ImageNet_FTAP_TAY_best.pth
+  Best Accuracy: 75.30%
+
+================================================================================
+FINAL EVALUATION (AFTER PRUNING + FINE-TUNING)
+================================================================================
+✓ Final Model Accuracy: 75.30%                                                                                                               
+✓ Model Size: 79.67 MB
+✓ Average Inference Time: 0.0148 ms
+✓ FLOPs: 3.34 GFLOPs
+
+================================================================================
+COMPARISON: TAYLOR GRADIENT-BASED PRUNING RESULTS
+================================================================================
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| Metric              |   Original (FT) |   After Pruning |   After FT | Change (Original → Final)   |
++=====================+=================+=================+============+=============================+
+| Accuracy (%)        |         78.59   |          2.43   |    75.3    | -3.29                       |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| Size (MB)           |         97.7    |         79.67   |    79.67   | -18.02 (-18.4%)             |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| Inference Time (ms) |          0.0264 |          0.0158 |     0.0148 | -0.0116                     |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+| FLOPs (G)           |          4.13   |          3.34   |     3.34   | -0.79 (-19.1%)              |
++---------------------+-----------------+-----------------+------------+-----------------------------+
+
+✓ Results saved to: c:\source\repos\cleanai-v5\test_scenarios\TS3_ResNet50_ImageNet\TS3_Results.json
+
+================================================================================
+SCRIPT COMPLETED SUCCESSFULLY
+================================================================================
