@@ -1,0 +1,1 @@
+test_scenarios altındaki TSX isimli test senaryosunun özet dosyası olan TSX dosyasını detaylıca oku. Ardından bana özet bir döküman oluştur. Bu dökümanda ilgili test senaryosunda kullanılan parametreleri ver. Daha sonrasındaysa tüm tekniklere ait sonuçların karşılaştırmalı tablosunu oluştur.
