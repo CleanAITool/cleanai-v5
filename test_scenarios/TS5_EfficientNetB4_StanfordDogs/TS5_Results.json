@@ -1,0 +1,149 @@
+{
+    "prepare_model": {
+        "test_scenario": "TS5",
+        "model": "EfficientNetB4",
+        "dataset": "Food101",
+        "script": "TS5_01_prepare_model",
+        "pretrained": {
+            "accuracy": 0.906930693069307,
+            "size_mb": 68.1118049621582,
+            "inference_time_ms": 0.6093965198059034,
+            "flops": 4609831832.0
+        },
+        "finetuned": {
+            "accuracy": 89.20792079207921,
+            "size_mb": 68.11670303344727,
+            "inference_time_ms": 0.5760694735408056,
+            "flops": 4609831832.0,
+            "epochs": 10
+        },
+        "checkpoints": {
+            "best": "C:\\source\\checkpoints\\TS5\\EfficientNetB4_Food101_FT_best.pth",
+            "final": "C:\\source\\checkpoints\\TS5\\EfficientNetB4_Food101_FT_epoch10.pth"
+        }
+    },
+    "coverage_pruning": {
+        "test_scenario": "TS5",
+        "model": "EfficientNetB4",
+        "dataset": "Food101",
+        "method": "Neuron Coverage",
+        "script": "TS5_02_coverage_pruning",
+        "pruning_config": {
+            "ratio": 0.1,
+            "global": false,
+            "iterative_steps": 1
+        },
+        "original": {
+            "accuracy": 89.20792079207921,
+            "size_mb": 68.1118049621582,
+            "inference_time_ms": 0.5975636577515605,
+            "flops": 4609831832.0
+        },
+        "pruned": {
+            "accuracy": 1.108910891089109,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 5.106312893401829,
+            "flops": 3756680918.0
+        },
+        "final": {
+            "accuracy": 82.6930693069307,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 5.1141954094945365,
+            "flops": 3756680918.0,
+            "fine_tune_epochs": 10
+        }
+    },
+    "wanda_pruning": {
+        "test_scenario": "TS5",
+        "model": "EfficientNetB4",
+        "dataset": "Food101",
+        "method": "Wanda",
+        "script": "TS5_03_wanda_pruning",
+        "pruning_config": {
+            "ratio": 0.1,
+            "global": false,
+            "iterative_steps": 1
+        },
+        "original": {
+            "accuracy": 89.20792079207921,
+            "size_mb": 68.1118049621582,
+            "inference_time_ms": 0.5897836850518438,
+            "flops": 4609831832.0
+        },
+        "pruned": {
+            "accuracy": 1.80990099009901,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 5.232182567900234,
+            "flops": 3756680918.0
+        },
+        "final": {
+            "accuracy": 83.2990099009901,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 5.145303220821378,
+            "flops": 3756680918.0,
+            "fine_tune_epochs": 10
+        }
+    },
+    "magnitude_pruning": {
+        "test_scenario": "TS5",
+        "model": "EfficientNetB4",
+        "dataset": "Food101",
+        "method": "Magnitude",
+        "script": "TS5_04_magnitude_pruning",
+        "pruning_config": {
+            "ratio": 0.1,
+            "global": false,
+            "iterative_steps": 1
+        },
+        "original": {
+            "accuracy": 89.20792079207921,
+            "size_mb": 68.1118049621582,
+            "inference_time_ms": 0.6049612019166227,
+            "flops": 4609831832.0
+        },
+        "pruned": {
+            "accuracy": 27.564356435643564,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 0.5720894385018328,
+            "flops": 3756680918.0
+        },
+        "final": {
+            "accuracy": 85.82574257425743,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 0.5603259956632859,
+            "flops": 3756680918.0,
+            "fine_tune_epochs": 10
+        }
+    },
+    "taylor_pruning": {
+        "test_scenario": "TS5",
+        "model": "EfficientNetB4",
+        "dataset": "Food101",
+        "method": "Taylor",
+        "script": "TS5_05_taylor_pruning",
+        "pruning_config": {
+            "ratio": 0.1,
+            "global": false,
+            "iterative_steps": 1
+        },
+        "original": {
+            "accuracy": 89.20792079207921,
+            "size_mb": 68.1118049621582,
+            "inference_time_ms": 0.5872992302059297,
+            "flops": 4609831832.0
+        },
+        "pruned": {
+            "accuracy": 34.37623762376238,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 0.5730298631473612,
+            "flops": 3756680918.0
+        },
+        "final": {
+            "accuracy": 86.67326732673267,
+            "size_mb": 55.34782028198242,
+            "inference_time_ms": 0.5559931456702959,
+            "flops": 3756680918.0,
+            "fine_tune_epochs": 10
+        }
+    }
+}
