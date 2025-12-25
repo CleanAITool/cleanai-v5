@@ -1,148 +1,148 @@
 {
     "prepare_model": {
-        "test_scenario": "TS3",
+        "test_scenario": "TS4",
         "model": "ResNet50",
         "dataset": "ImageNet",
-        "script": "TS2_01_prepare_model",
+        "script": "TS4_01_prepare_model",
         "pretrained": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.0229074776206208,
+            "inference_time_ms": 0.022208161495098723,
             "flops": 4133742592.0
         },
         "finetuned": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69564056396484,
-            "inference_time_ms": 0.01273481120998936,
+            "inference_time_ms": 0.01222622867652901,
             "flops": 4133742592.0,
             "epochs": 0
         },
         "checkpoints": {
-            "best": "C:\\source\\checkpoints\\TS3\\ResNet50_ImageNet_FT_best.pth",
-            "final": "C:\\source\\checkpoints\\TS3\\ResNet50_ImageNet_FT_epoch0.pth"
+            "best": "C:\\source\\checkpoints\\TS4\\ResNet50_ImageNet_FT_best.pth",
+            "final": "C:\\source\\checkpoints\\TS4\\ResNet50_ImageNet_FT_epoch0.pth"
         }
     },
     "coverage_pruning": {
-        "test_scenario": "TS3",
+        "test_scenario": "TS4",
         "model": "ResNet50",
         "dataset": "ImageNet",
         "method": "Neuron Coverage",
         "script": "TS2_02_coverage_pruning",
         "pruning_config": {
             "ratio": 0.1,
-            "global": false,
+            "global": true,
             "iterative_steps": 1
         },
         "original": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.028613349842438324,
+            "inference_time_ms": 0.0267879579664501,
             "flops": 4133742592.0
         },
         "pruned": {
-            "accuracy": 0.17401044062643758,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 1.335292607802565,
-            "flops": 3344811925.0
+            "accuracy": 0.1120067204032242,
+            "size_mb": 82.7799072265625,
+            "inference_time_ms": 1.3331985471361896,
+            "flops": 3203924157.0
         },
         "final": {
-            "accuracy": 72.13432805968358,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 1.3348291244351902,
-            "flops": 3344811925.0,
+            "accuracy": 71.23027381642899,
+            "size_mb": 82.7799072265625,
+            "inference_time_ms": 2.0268313160791633,
+            "flops": 3203924157.0,
             "fine_tune_epochs": 10
         }
     },
     "wanda_pruning": {
-        "test_scenario": "TS3",
+        "test_scenario": "TS4",
         "model": "ResNet50",
         "dataset": "ImageNet",
         "method": "Wanda",
         "script": "TS2_03_wanda_pruning",
         "pruning_config": {
             "ratio": 0.1,
-            "global": false,
+            "global": true,
             "iterative_steps": 1
         },
         "original": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.029660288228194498,
+            "inference_time_ms": 0.030238471881815016,
             "flops": 4133742592.0
         },
         "pruned": {
-            "accuracy": 0.4740284417065024,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 1.3394459268473642,
-            "flops": 3344811925.0
+            "accuracy": 0.1060063603816229,
+            "size_mb": 82.07281875610352,
+            "inference_time_ms": 1.1838904528646848,
+            "flops": 3165404452.0
         },
         "final": {
-            "accuracy": 74.50247014820889,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 1.3399053110871657,
-            "flops": 3344811925.0,
+            "accuracy": 68.13008780526832,
+            "size_mb": 82.07281875610352,
+            "inference_time_ms": 1.1832383730967884,
+            "flops": 3165404452.0,
             "fine_tune_epochs": 10
         }
     },
     "magnitude_pruning": {
-        "test_scenario": "TS3",
+        "test_scenario": "TS4",
         "model": "ResNet50",
         "dataset": "ImageNet",
         "method": "Magnitude",
-        "script": "TS3_04_magnitude_pruning",
+        "script": "TS4_04_magnitude_pruning",
         "pruning_config": {
             "ratio": 0.1,
-            "global": false,
+            "global": true,
             "iterative_steps": 1
         },
         "original": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.029416303126906133,
+            "inference_time_ms": 0.030875377052900742,
             "flops": 4133742592.0
         },
         "pruned": {
-            "accuracy": 0.36002160129607774,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 0.026014250136167403,
-            "flops": 3344811925.0
+            "accuracy": 0.12400744044642678,
+            "size_mb": 81.44278335571289,
+            "inference_time_ms": 0.021864589118109186,
+            "flops": 3045102424.0
         },
         "final": {
-            "accuracy": 75.54653279196752,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 0.013940473386547372,
-            "flops": 3344811925.0,
+            "accuracy": 69.09614576874613,
+            "size_mb": 81.44278335571289,
+            "inference_time_ms": 0.01608261385853083,
+            "flops": 3045102424.0,
             "fine_tune_epochs": 10
         }
     },
     "taylor_pruning": {
-        "test_scenario": "TS3",
+        "test_scenario": "TS4",
         "model": "ResNet50",
         "dataset": "ImageNet",
         "method": "Taylor",
-        "script": "TS3_05_taylor_pruning",
+        "script": "TS4_05_taylor_pruning",
         "pruning_config": {
             "ratio": 0.1,
-            "global": false,
+            "global": true,
             "iterative_steps": 1
         },
         "original": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.027144501657636672,
+            "inference_time_ms": 0.0335179110596501,
             "flops": 4133742592.0
         },
         "pruned": {
-            "accuracy": 6.098365901954117,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 0.017557885034245296,
-            "flops": 3344811925.0
+            "accuracy": 0.588035282116927,
+            "size_mb": 82.414306640625,
+            "inference_time_ms": 0.020359251008875295,
+            "flops": 3219052011.0
         },
         "final": {
-            "accuracy": 75.53853231193871,
-            "size_mb": 79.67262268066406,
-            "inference_time_ms": 0.01814445990919988,
-            "flops": 3344811925.0,
+            "accuracy": 76.82860971658299,
+            "size_mb": 82.414306640625,
+            "inference_time_ms": 0.020950254726253517,
+            "flops": 3219052011.0,
             "fine_tune_epochs": 10
         }
     }

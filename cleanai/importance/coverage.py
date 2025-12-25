@@ -18,13 +18,14 @@ class NeuronCoverageImportance(tp.importance.Importance):
     Importance estimator based on neuron coverage from test data.
     
     This class computes importance scores for pruning based on how active
-    each neuron/channel is on test data. Channels with lower coverage
-    (less active) are considered less important and will be pruned first.
+    each neuron/channel is on test data. Channels with higher coverage
+    (more active) are considered more important and will be kept.
+    Channels with lower coverage (less active) will be pruned first.
     
-    The importance score is computed as the inverse of coverage:
-        importance = 1 / (coverage + epsilon)
+    The importance score equals the coverage:
+        importance = coverage
     
-    This means lower coverage -> higher importance for pruning.
+    This means higher coverage -> higher importance -> kept (not pruned).
     """
     
     def __init__(
@@ -128,7 +129,7 @@ class NeuronCoverageImportance(tp.importance.Importance):
             
         Returns:
             1-D tensor of importance scores (one per channel/neuron in the group)
-            Higher importance = higher priority for pruning (inverse of coverage)
+            Higher importance = higher priority to KEEP (not prune)
         """
         # Get the model from the dependency graph
         model = group._DG.model
@@ -165,9 +166,10 @@ class NeuronCoverageImportance(tp.importance.Importance):
         
         channel_coverage = coverage[plain_idxs]
         
-        # Convert coverage to importance (inverse relationship)
-        # Lower coverage = higher importance for pruning
-        importance_scores = 1.0 / (channel_coverage + self.epsilon)
+        # IMPORTANT: In Torch-Pruning, higher importance = higher priority to KEEP
+        # Therefore: higher coverage = higher importance (keep active neurons)
+        # Lower coverage neurons will be pruned first
+        importance_scores = channel_coverage
         
         # Normalize to [0, 1] range for consistency
         if importance_scores.max() > importance_scores.min():
@@ -216,10 +218,10 @@ class NeuronCoverageImportance(tp.importance.Importance):
             # Default: uniform importance
             importance = torch.ones(len(idxs))
         
-        # For magnitude, we want to prune small weights, so invert
-        # (small magnitude = high importance for pruning)
-        max_imp = importance.max()
-        if max_imp > 0:
-            importance = max_imp - importance
+        # IMPORTANT: In Torch-Pruning, higher importance = keep
+        # So higher magnitude = higher importance (standard magnitude-based pruning)
+        # Normalize the importance scores
+        if importance.max() > 0:
+            importance = importance / importance.max()
         
         return importance

@@ -72,7 +72,7 @@ def load_dataset():
     
     if not os.path.exists(val_dir):
         print(f"\nERROR: ImageNet validation set not found at: {val_dir}")
-        print("Please run TS2_01_prepare_model.py first to set up the dataset.")
+        print("Please run TS4_01_prepare_model.py first to set up the dataset.")
         raise FileNotFoundError(f"ImageNet validation set not found: {val_dir}")
     
     test_dataset = torchvision.datasets.ImageFolder(
@@ -135,7 +135,7 @@ def load_finetuned_model():
     
     if not os.path.exists(best_checkpoint):
         raise FileNotFoundError(f"Baseline model not found: {best_checkpoint}\n"
-                              f"Please run TS2_01_prepare_model.py first.")
+                              f"Please run TS4_01_prepare_model.py first.")
     
     # Create model architecture (1000 classes for ImageNet)
     model = resnet50(weights=None)

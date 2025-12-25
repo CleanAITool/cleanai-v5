@@ -226,8 +226,9 @@ class WandaImportance(tp.importance.Importance):
             wanda_scores = (wanda_scores - wanda_scores.min()) / \
                           (wanda_scores.max() - wanda_scores.min() + self.epsilon)
         
-        # Invert: lower WANDA score = higher importance for pruning
-        # We want to prune channels with low weight×activation product
-        importance_scores = 1.0 - wanda_scores
+        # IMPORTANT: In Torch-Pruning, higher importance = keep
+        # Higher WANDA score (weight×activation) = more important = keep
+        # Lower WANDA score = less important = prune first
+        importance_scores = wanda_scores
         
         return importance_scores

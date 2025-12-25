@@ -7,13 +7,13 @@
         "pretrained": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.022786555763876094,
+            "inference_time_ms": 0.023949771241763528,
             "flops": 4133742592.0
         },
         "finetuned": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69564056396484,
-            "inference_time_ms": 0.012330397340996556,
+            "inference_time_ms": 0.013947207517694833,
             "flops": 4133742592.0,
             "epochs": 0
         },
@@ -36,19 +36,19 @@
         "original": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.028030050085625976,
+            "inference_time_ms": 0.02978804887571339,
             "flops": 4133742592.0
         },
         "pruned": {
-            "accuracy": 0.18401104066243976,
+            "accuracy": 0.08600516030961858,
             "size_mb": 63.64409637451172,
-            "inference_time_ms": 1.1885723128362902,
+            "inference_time_ms": 1.1881879920728866,
             "flops": 2657220755.0
         },
         "final": {
-            "accuracy": 54.36126167570054,
+            "accuracy": 48.44290657439446,
             "size_mb": 63.64409637451172,
-            "inference_time_ms": 1.190470142688394,
+            "inference_time_ms": 1.1929392552616906,
             "flops": 2657220755.0,
             "fine_tune_epochs": 5
         }
@@ -67,19 +67,19 @@
         "original": {
             "accuracy": 78.59471568294097,
             "size_mb": 97.69538116455078,
-            "inference_time_ms": 0.025607180035468944,
+            "inference_time_ms": 0.028748599577397938,
             "flops": 4133742592.0
         },
         "pruned": {
-            "accuracy": 0.10000600036002161,
+            "accuracy": 0.18201092065523933,
             "size_mb": 63.64409637451172,
-            "inference_time_ms": 1.1913795168557235,
+            "inference_time_ms": 1.192286345004846,
             "flops": 2657220755.0
         },
         "final": {
-            "accuracy": 42.76856611396684,
+            "accuracy": 56.4533872032322,
             "size_mb": 63.64409637451172,
-            "inference_time_ms": 1.1926292899794622,
+            "inference_time_ms": 1.1887812101806217,
             "flops": 2657220755.0,
             "fine_tune_epochs": 5
         }
