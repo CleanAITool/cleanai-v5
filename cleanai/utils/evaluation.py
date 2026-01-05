@@ -48,6 +48,11 @@ def evaluate_model(
                 inputs = batch.to(device)
                 targets = None
             
+            # Match input dtype to model dtype (for FP16/BF16 models)
+            model_dtype = next(model.parameters()).dtype
+            if model_dtype in [torch.float16, torch.bfloat16]:
+                inputs = inputs.to(model_dtype)
+            
             # Forward pass
             outputs = model(inputs)
             

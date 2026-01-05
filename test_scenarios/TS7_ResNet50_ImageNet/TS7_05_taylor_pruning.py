@@ -1,6 +1,6 @@
 """
-Test Scenario TS2 - Script 2: Neuron Coverage Pruning
-Loads fine-tuned ResNet-50, applies Neuron Coverage pruning, and fine-tunes the pruned model.
+Test Scenario TS7 - Script 5: Taylor Gradient-Based Pruning
+Loads fine-tuned ResNet-50, applies Taylor gradient-based pruning, and fine-tunes the pruned model.
 """
 
 import os
@@ -17,34 +17,35 @@ from torchvision.models import resnet50
 from tqdm import tqdm
 from tabulate import tabulate
 import numpy as np
+import torch_pruning as tp
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from cleanai import CoveragePruner, count_parameters
+from cleanai import count_parameters
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS2',
+    'test_scenario': 'TS7',
     'model_name': 'ResNet50',
     'dataset_name': 'ImageNet',
-    'method': 'NC',  # Neuron Coverage
-    'checkpoint_dir': r'C:\source\checkpoints\TS2',
+    'method': 'TAY',  # Taylor
+    'checkpoint_dir': r'C:\source\checkpoints\TS7',
     'dataset_dir': r'C:\source\downloaded_datasets\imagenet',
     'results_dir': os.path.join(os.path.dirname(__file__)),
-    'results_file': 'TS2_Results.json',
-    'pruning_ratio': 0.2,  # 20%
-    'global_pruning': False,
+    'results_file': 'TS7_Results.json',
+    'pruning_ratio': 0.1,  # 10%
+    'global_pruning': True,
     'iterative_steps': 1,
-    'fine_tune_epochs_base': 10,  # Reduced for ImageNet
+    'fine_tune_epochs_base': 10,
     'save_every_n_epochs': 2,
     'batch_size': 256,
     'learning_rate': 0.0001,  # Lower LR for fine-tuning after pruning
-    'num_calibration_batches': 100,  # Number of batches for coverage calculation
+    'num_calibration_batches': 100,  # Number of batches for Taylor computation
     'device': 'cuda' if torch.cuda.is_available() else 'cpu'
 }
 
-CONFIG['fine_tune_epochs'] = CONFIG['fine_tune_epochs_base'] // 2
+CONFIG['fine_tune_epochs'] = 10
 
 def load_dataset():
     """Load ImageNet validation dataset"""
@@ -72,7 +73,7 @@ def load_dataset():
     
     if not os.path.exists(val_dir):
         print(f"\nERROR: ImageNet validation set not found at: {val_dir}")
-        print("Please run TS2_01_prepare_model.py first to set up the dataset.")
+        print("Please run TS7_01_prepare_model.py first to set up the dataset.")
         raise FileNotFoundError(f"ImageNet validation set not found: {val_dir}")
     
     test_dataset = torchvision.datasets.ImageFolder(
@@ -102,7 +103,7 @@ def load_dataset():
         pin_memory=True if CONFIG['device'] == 'cuda' else False
     )
     
-    # Create calibration loader (subset for coverage calculation)
+    # Create calibration loader (subset for Taylor computation)
     calibration_size = CONFIG['batch_size'] * CONFIG['num_calibration_batches']
     calibration_indices = indices[:min(calibration_size, len(test_dataset))]
     calibration_dataset = Subset(test_dataset, calibration_indices)
@@ -135,7 +136,7 @@ def load_finetuned_model():
     
     if not os.path.exists(best_checkpoint):
         raise FileNotFoundError(f"Baseline model not found: {best_checkpoint}\n"
-                              f"Please run TS2_01_prepare_model.py first.")
+                              f"Please run TS7_01_prepare_model.py first.")
     
     # Create model architecture (1000 classes for ImageNet)
     model = resnet50(weights=None)
@@ -202,16 +203,17 @@ def evaluate_model(model, test_loader):
     
     return accuracy, avg_inference_time
 
-def apply_coverage_pruning(model, calibration_loader):
-    """Apply Neuron Coverage based pruning"""
+def apply_taylor_pruning(model, calibration_loader):
+    """Apply Taylor gradient-based pruning using Torch-Pruning"""
     print("\n" + "="*80)
-    print("APPLYING NEURON COVERAGE PRUNING")
+    print("APPLYING TAYLOR GRADIENT-BASED PRUNING")
     print("="*80)
     print(f"Pruning Ratio: {CONFIG['pruning_ratio']*100}%")
     print(f"Global Pruning: {CONFIG['global_pruning']}")
     print(f"Iterative Steps: {CONFIG['iterative_steps']}")
-    print(f"Coverage Metric: normalized_mean")
-    print(f"Max Calibration Batches: {CONFIG['num_calibration_batches']}")
+    print(f"Taylor pruning uses first-order gradient information")
+    print(f"Importance = |weight × gradient| (Taylor expansion approximation)")
+    print(f"Using {CONFIG['num_calibration_batches']} calibration batches")
     
     # Get example input for model analysis
     example_inputs = next(iter(calibration_loader))[0][:1].to(CONFIG['device'])
@@ -219,29 +221,87 @@ def apply_coverage_pruning(model, calibration_loader):
     # Protect final classification layer from pruning
     ignored_layers = [model.fc]
     
-    # Use CoveragePruner wrapper (same as TS1)
-    pruner = CoveragePruner(
+    # Use Torch-Pruning's TaylorImportance directly
+    # Note: Taylor requires gradients, so we need to compute them
+    print("\nComputing Taylor importance scores (requires gradients)...")
+    
+    # Create loss function
+    criterion = nn.CrossEntropyLoss()
+    
+    # Compute gradients on calibration data
+    model.train()  # Set to train mode for gradient computation
+    model.zero_grad()
+    
+    num_batches = 0
+    for images, labels in tqdm(calibration_loader, desc="Computing gradients"):
+        images, labels = images.to(CONFIG['device']), labels.to(CONFIG['device'])
+        
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        
+        num_batches += 1
+        if num_batches >= CONFIG['num_calibration_batches']:
+            break
+    
+    # Average gradients
+    for param in model.parameters():
+        if param.grad is not None:
+            param.grad.div_(num_batches)
+    
+    print(f"✓ Gradients computed on {num_batches} batches")
+    
+    # Create Taylor importance estimator
+    # GroupTaylorImportance is more robust for structured pruning
+    try:
+        importance = tp.importance.GroupTaylorImportance()
+        print("Using GroupTaylorImportance")
+    except:
+        # Fallback to regular TaylorImportance
+        importance = tp.importance.TaylorImportance()
+        print("Using TaylorImportance")
+    
+    # Create pruner
+    try:
+        from torch_pruning.pruner.algorithms import MetaPruner
+        pruner_class = MetaPruner
+    except ImportError:
+        from torch_pruning.pruner.algorithms.base_pruner import BasePruner
+        pruner_class = BasePruner
+    
+    print("\nInitializing Torch-Pruning with Taylor importance...")
+    pruner = pruner_class(
         model=model,
         example_inputs=example_inputs,
-        test_loader=calibration_loader,
-        pruning_ratio=CONFIG['pruning_ratio'],
-        importance_method='coverage',
-        coverage_metric='normalized_mean',
+        importance=importance,
         global_pruning=CONFIG['global_pruning'],
+        pruning_ratio=CONFIG['pruning_ratio'],
         iterative_steps=CONFIG['iterative_steps'],
-        max_batches=CONFIG['num_calibration_batches'],
         ignored_layers=ignored_layers,
-        device=CONFIG['device'],
-        verbose=True
     )
     
     print("\nApplying pruning...")
-    pruning_results = pruner.prune()
-    pruned_model = pruner.get_model()
     
-    print("✓ Neuron Coverage pruning completed")
+    # Track pruning progress
+    initial_params = sum(p.numel() for p in model.parameters())
     
-    return pruned_model
+    for step in range(CONFIG['iterative_steps']):
+        pruner.step()
+        if CONFIG['iterative_steps'] > 1:
+            print(f"  Step {step + 1}/{CONFIG['iterative_steps']} completed")
+    
+    final_params = sum(p.numel() for p in model.parameters())
+    params_removed = initial_params - final_params
+    
+    print(f"\n✓ Taylor pruning completed")
+    print(f"  Parameters before: {initial_params:,}")
+    print(f"  Parameters after: {final_params:,}")
+    print(f"  Parameters removed: {params_removed:,} ({params_removed/initial_params:.2%})")
+    
+    # Zero out gradients after pruning
+    model.zero_grad()
+    
+    return model
 
 def train_one_epoch(model, train_loader, criterion, optimizer, epoch):
     """Train model for one epoch"""
@@ -311,6 +371,7 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
             )
             torch.save({
                 'epoch': epoch + 1,
+                'model': model,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'test_accuracy': test_acc,
@@ -326,13 +387,13 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
     # Restore best model
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
-        # Save best model (save full model for compatibility with quantization scripts)
+        # Save best model
         best_model_path = os.path.join(
             CONFIG['checkpoint_dir'],
             f"{CONFIG['model_name']}_{CONFIG['dataset_name']}_FTAP_{CONFIG['method']}_best.pth"
         )
         torch.save({
-            'model': model,  # Save full model for pruned models
+            'model': model,
             'model_state_dict': best_model_state,
             'test_accuracy': best_accuracy,
             'pruning_ratio': CONFIG['pruning_ratio']
@@ -345,11 +406,11 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
 def main():
     """Main execution function"""
     print("\n" + "="*80)
-    print(f"TEST SCENARIO {CONFIG['test_scenario']}: NEURON COVERAGE PRUNING")
+    print(f"TEST SCENARIO {CONFIG['test_scenario']}: TAYLOR GRADIENT-BASED PRUNING")
     print("="*80)
     print(f"Model: {CONFIG['model_name']}")
     print(f"Dataset: {CONFIG['dataset_name']}")
-    print(f"Method: Neuron Coverage")
+    print(f"Method: Taylor (Gradient-based)")
     print(f"Device: {CONFIG['device']}")
     print(f"Pruning Ratio: {CONFIG['pruning_ratio']*100}%")
     print("="*80)
@@ -390,7 +451,7 @@ def main():
         print(f"✓ Loaded pruned model from: {final_checkpoint}")
     else:
         # Apply pruning
-        model = apply_coverage_pruning(model, calibration_loader)
+        model = apply_taylor_pruning(model, calibration_loader)
         
         # Evaluate after pruning (before fine-tuning)
         print("\n" + "="*80)
@@ -427,7 +488,7 @@ def main():
     
     # Comparison table
     print("\n" + "="*80)
-    print("COMPARISON: NEURON COVERAGE PRUNING RESULTS")
+    print("COMPARISON: TAYLOR GRADIENT-BASED PRUNING RESULTS")
     print("="*80)
     
     comparison_data = [
@@ -461,8 +522,8 @@ def main():
         'test_scenario': CONFIG['test_scenario'],
         'model': CONFIG['model_name'],
         'dataset': CONFIG['dataset_name'],
-        'method': 'Neuron Coverage',
-        'script': 'TS2_02_coverage_pruning',
+        'method': 'Taylor',
+        'script': 'TS7_05_taylor_pruning',
         'pruning_config': {
             'ratio': CONFIG['pruning_ratio'],
             'global': CONFIG['global_pruning'],
@@ -498,7 +559,7 @@ def main():
     else:
         all_results = {}
     
-    all_results['coverage_pruning'] = results
+    all_results['taylor_pruning'] = results
     
     with open(results_file, 'w') as f:
         json.dump(all_results, f, indent=4)
@@ -510,3 +571,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

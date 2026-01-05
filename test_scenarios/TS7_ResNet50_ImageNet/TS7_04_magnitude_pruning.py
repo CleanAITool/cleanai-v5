@@ -1,6 +1,6 @@
 """
-Test Scenario TS2 - Script 2: Neuron Coverage Pruning
-Loads fine-tuned ResNet-50, applies Neuron Coverage pruning, and fine-tunes the pruned model.
+Test Scenario TS7 - Script 4: Magnitude-Based Pruning
+Loads fine-tuned ResNet-50, applies Torch-Pruning's Magnitude pruning, and fine-tunes the pruned model.
 """
 
 import os
@@ -25,26 +25,25 @@ from cleanai import CoveragePruner, count_parameters
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS2',
+    'test_scenario': 'TS7',
     'model_name': 'ResNet50',
     'dataset_name': 'ImageNet',
-    'method': 'NC',  # Neuron Coverage
-    'checkpoint_dir': r'C:\source\checkpoints\TS2',
+    'method': 'MAG',  # Magnitude
+    'checkpoint_dir': r'C:\source\checkpoints\TS7',
     'dataset_dir': r'C:\source\downloaded_datasets\imagenet',
     'results_dir': os.path.join(os.path.dirname(__file__)),
-    'results_file': 'TS2_Results.json',
-    'pruning_ratio': 0.2,  # 20%
-    'global_pruning': False,
+    'results_file': 'TS7_Results.json',
+    'pruning_ratio': 0.1,  # 10%
+    'global_pruning': True,
     'iterative_steps': 1,
-    'fine_tune_epochs_base': 10,  # Reduced for ImageNet
+    'fine_tune_epochs_base': 10,
     'save_every_n_epochs': 2,
     'batch_size': 256,
     'learning_rate': 0.0001,  # Lower LR for fine-tuning after pruning
-    'num_calibration_batches': 100,  # Number of batches for coverage calculation
     'device': 'cuda' if torch.cuda.is_available() else 'cpu'
 }
 
-CONFIG['fine_tune_epochs'] = CONFIG['fine_tune_epochs_base'] // 2
+CONFIG['fine_tune_epochs'] = 10
 
 def load_dataset():
     """Load ImageNet validation dataset"""
@@ -72,7 +71,7 @@ def load_dataset():
     
     if not os.path.exists(val_dir):
         print(f"\nERROR: ImageNet validation set not found at: {val_dir}")
-        print("Please run TS2_01_prepare_model.py first to set up the dataset.")
+        print("Please run TS7_01_prepare_model.py first to set up the dataset.")
         raise FileNotFoundError(f"ImageNet validation set not found: {val_dir}")
     
     test_dataset = torchvision.datasets.ImageFolder(
@@ -102,24 +101,11 @@ def load_dataset():
         pin_memory=True if CONFIG['device'] == 'cuda' else False
     )
     
-    # Create calibration loader (subset for coverage calculation)
-    calibration_size = CONFIG['batch_size'] * CONFIG['num_calibration_batches']
-    calibration_indices = indices[:min(calibration_size, len(test_dataset))]
-    calibration_dataset = Subset(test_dataset, calibration_indices)
-    calibration_loader = DataLoader(
-        calibration_dataset,
-        batch_size=CONFIG['batch_size'],
-        shuffle=False,
-        num_workers=2,
-        pin_memory=True if CONFIG['device'] == 'cuda' else False
-    )
-    
     print(f"✓ Dataset loaded")
     print(f"  - Validation samples: {len(test_dataset)}")
     print(f"  - Training samples (subset): {len(train_dataset)}")
-    print(f"  - Calibration samples: {len(calibration_dataset)}")
     
-    return train_loader, test_loader, calibration_loader
+    return train_loader, test_loader
 
 def load_finetuned_model():
     """Load the fine-tuned model"""
@@ -135,7 +121,7 @@ def load_finetuned_model():
     
     if not os.path.exists(best_checkpoint):
         raise FileNotFoundError(f"Baseline model not found: {best_checkpoint}\n"
-                              f"Please run TS2_01_prepare_model.py first.")
+                              f"Please run TS7_01_prepare_model.py first.")
     
     # Create model architecture (1000 classes for ImageNet)
     model = resnet50(weights=None)
@@ -202,34 +188,32 @@ def evaluate_model(model, test_loader):
     
     return accuracy, avg_inference_time
 
-def apply_coverage_pruning(model, calibration_loader):
-    """Apply Neuron Coverage based pruning"""
+def apply_magnitude_pruning(model, test_loader):
+    """Apply Magnitude-based pruning using Torch-Pruning"""
     print("\n" + "="*80)
-    print("APPLYING NEURON COVERAGE PRUNING")
+    print("APPLYING MAGNITUDE-BASED PRUNING")
     print("="*80)
     print(f"Pruning Ratio: {CONFIG['pruning_ratio']*100}%")
     print(f"Global Pruning: {CONFIG['global_pruning']}")
     print(f"Iterative Steps: {CONFIG['iterative_steps']}")
-    print(f"Coverage Metric: normalized_mean")
-    print(f"Max Calibration Batches: {CONFIG['num_calibration_batches']}")
+    print(f"Magnitude pruning uses L2 norm of weights to determine importance")
+    print(f"This is Torch-Pruning's most robust baseline method")
     
     # Get example input for model analysis
-    example_inputs = next(iter(calibration_loader))[0][:1].to(CONFIG['device'])
+    example_inputs = next(iter(test_loader))[0][:1].to(CONFIG['device'])
     
     # Protect final classification layer from pruning
     ignored_layers = [model.fc]
     
-    # Use CoveragePruner wrapper (same as TS1)
+    # Use CoveragePruner wrapper with magnitude method
     pruner = CoveragePruner(
         model=model,
         example_inputs=example_inputs,
-        test_loader=calibration_loader,
+        test_loader=test_loader,
         pruning_ratio=CONFIG['pruning_ratio'],
-        importance_method='coverage',
-        coverage_metric='normalized_mean',
+        importance_method='magnitude',  # Torch-Pruning's MagnitudeImportance
         global_pruning=CONFIG['global_pruning'],
         iterative_steps=CONFIG['iterative_steps'],
-        max_batches=CONFIG['num_calibration_batches'],
         ignored_layers=ignored_layers,
         device=CONFIG['device'],
         verbose=True
@@ -239,7 +223,7 @@ def apply_coverage_pruning(model, calibration_loader):
     pruning_results = pruner.prune()
     pruned_model = pruner.get_model()
     
-    print("✓ Neuron Coverage pruning completed")
+    print("✓ Magnitude-based pruning completed")
     
     return pruned_model
 
@@ -311,6 +295,7 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
             )
             torch.save({
                 'epoch': epoch + 1,
+                'model': model,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'test_accuracy': test_acc,
@@ -326,13 +311,13 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
     # Restore best model
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
-        # Save best model (save full model for compatibility with quantization scripts)
+        # Save best model
         best_model_path = os.path.join(
             CONFIG['checkpoint_dir'],
             f"{CONFIG['model_name']}_{CONFIG['dataset_name']}_FTAP_{CONFIG['method']}_best.pth"
         )
         torch.save({
-            'model': model,  # Save full model for pruned models
+            'model': model,
             'model_state_dict': best_model_state,
             'test_accuracy': best_accuracy,
             'pruning_ratio': CONFIG['pruning_ratio']
@@ -345,17 +330,17 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
 def main():
     """Main execution function"""
     print("\n" + "="*80)
-    print(f"TEST SCENARIO {CONFIG['test_scenario']}: NEURON COVERAGE PRUNING")
+    print(f"TEST SCENARIO {CONFIG['test_scenario']}: MAGNITUDE-BASED PRUNING")
     print("="*80)
     print(f"Model: {CONFIG['model_name']}")
     print(f"Dataset: {CONFIG['dataset_name']}")
-    print(f"Method: Neuron Coverage")
+    print(f"Method: Magnitude (Torch-Pruning)")
     print(f"Device: {CONFIG['device']}")
     print(f"Pruning Ratio: {CONFIG['pruning_ratio']*100}%")
     print("="*80)
     
     # Load dataset
-    train_loader, test_loader, calibration_loader = load_dataset()
+    train_loader, test_loader = load_dataset()
     
     # Load fine-tuned model
     model = load_finetuned_model()
@@ -390,7 +375,7 @@ def main():
         print(f"✓ Loaded pruned model from: {final_checkpoint}")
     else:
         # Apply pruning
-        model = apply_coverage_pruning(model, calibration_loader)
+        model = apply_magnitude_pruning(model, test_loader)
         
         # Evaluate after pruning (before fine-tuning)
         print("\n" + "="*80)
@@ -427,7 +412,7 @@ def main():
     
     # Comparison table
     print("\n" + "="*80)
-    print("COMPARISON: NEURON COVERAGE PRUNING RESULTS")
+    print("COMPARISON: MAGNITUDE-BASED PRUNING RESULTS")
     print("="*80)
     
     comparison_data = [
@@ -461,8 +446,8 @@ def main():
         'test_scenario': CONFIG['test_scenario'],
         'model': CONFIG['model_name'],
         'dataset': CONFIG['dataset_name'],
-        'method': 'Neuron Coverage',
-        'script': 'TS2_02_coverage_pruning',
+        'method': 'Magnitude',
+        'script': 'TS7_04_magnitude_pruning',
         'pruning_config': {
             'ratio': CONFIG['pruning_ratio'],
             'global': CONFIG['global_pruning'],
@@ -498,7 +483,7 @@ def main():
     else:
         all_results = {}
     
-    all_results['coverage_pruning'] = results
+    all_results['magnitude_pruning'] = results
     
     with open(results_file, 'w') as f:
         json.dump(all_results, f, indent=4)
@@ -510,3 +495,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

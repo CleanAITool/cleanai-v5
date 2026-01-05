@@ -1,5 +1,5 @@
 """
-Test Scenario TS2 - Script 2: Neuron Coverage Pruning
+Test Scenario TS7 - Script 2: Neuron Coverage Pruning
 Loads fine-tuned ResNet-50, applies Neuron Coverage pruning, and fine-tunes the pruned model.
 """
 
@@ -25,18 +25,18 @@ from cleanai import CoveragePruner, count_parameters
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS2',
+    'test_scenario': 'TS7',
     'model_name': 'ResNet50',
     'dataset_name': 'ImageNet',
     'method': 'NC',  # Neuron Coverage
-    'checkpoint_dir': r'C:\source\checkpoints\TS2',
+    'checkpoint_dir': r'C:\source\checkpoints\TS7',
     'dataset_dir': r'C:\source\downloaded_datasets\imagenet',
     'results_dir': os.path.join(os.path.dirname(__file__)),
-    'results_file': 'TS2_Results.json',
-    'pruning_ratio': 0.2,  # 20%
-    'global_pruning': False,
+    'results_file': 'TS7_Results.json',
+    'pruning_ratio': 0.1,  # 10%
+    'global_pruning': True,
     'iterative_steps': 1,
-    'fine_tune_epochs_base': 10,  # Reduced for ImageNet
+    'fine_tune_epochs_base': 10,
     'save_every_n_epochs': 2,
     'batch_size': 256,
     'learning_rate': 0.0001,  # Lower LR for fine-tuning after pruning
@@ -44,7 +44,7 @@ CONFIG = {
     'device': 'cuda' if torch.cuda.is_available() else 'cpu'
 }
 
-CONFIG['fine_tune_epochs'] = CONFIG['fine_tune_epochs_base'] // 2
+CONFIG['fine_tune_epochs'] = 10
 
 def load_dataset():
     """Load ImageNet validation dataset"""
@@ -72,7 +72,7 @@ def load_dataset():
     
     if not os.path.exists(val_dir):
         print(f"\nERROR: ImageNet validation set not found at: {val_dir}")
-        print("Please run TS2_01_prepare_model.py first to set up the dataset.")
+        print("Please run TS7_01_prepare_model.py first to set up the dataset.")
         raise FileNotFoundError(f"ImageNet validation set not found: {val_dir}")
     
     test_dataset = torchvision.datasets.ImageFolder(
@@ -135,7 +135,7 @@ def load_finetuned_model():
     
     if not os.path.exists(best_checkpoint):
         raise FileNotFoundError(f"Baseline model not found: {best_checkpoint}\n"
-                              f"Please run TS2_01_prepare_model.py first.")
+                              f"Please run TS7_01_prepare_model.py first.")
     
     # Create model architecture (1000 classes for ImageNet)
     model = resnet50(weights=None)
@@ -311,6 +311,7 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
             )
             torch.save({
                 'epoch': epoch + 1,
+                'model': model,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'test_accuracy': test_acc,
@@ -326,13 +327,13 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
     # Restore best model
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
-        # Save best model (save full model for compatibility with quantization scripts)
+        # Save best model
         best_model_path = os.path.join(
             CONFIG['checkpoint_dir'],
             f"{CONFIG['model_name']}_{CONFIG['dataset_name']}_FTAP_{CONFIG['method']}_best.pth"
         )
         torch.save({
-            'model': model,  # Save full model for pruned models
+            'model': model,
             'model_state_dict': best_model_state,
             'test_accuracy': best_accuracy,
             'pruning_ratio': CONFIG['pruning_ratio']
@@ -510,3 +511,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

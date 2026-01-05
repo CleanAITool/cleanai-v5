@@ -21,7 +21,9 @@ from .utils import (
     count_parameters,
     evaluate_model,
     compare_models,
-    print_model_summary
+    print_model_summary,
+    ModelQuantizer,
+    quantize_model
 )
 
 from .reporting import (
@@ -46,6 +48,10 @@ __all__ = [
     'evaluate_model',
     'compare_models',
     'print_model_summary',
+    
+    # Quantization
+    'ModelQuantizer',
+    'quantize_model',
     
     # Reporting
     'PruningReportGenerator',

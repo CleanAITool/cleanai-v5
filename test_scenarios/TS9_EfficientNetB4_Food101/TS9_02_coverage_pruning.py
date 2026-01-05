@@ -1,6 +1,6 @@
 """
-Test Scenario TS2 - Script 2: Neuron Coverage Pruning
-Loads fine-tuned ResNet-50, applies Neuron Coverage pruning, and fine-tunes the pruned model.
+Test Scenario TS6 - Script 2: Neuron Coverage Pruning
+Loads fine-tuned EfficientNet-B4, applies Neuron Coverage pruning, and fine-tunes the pruned model.
 """
 
 import os
@@ -13,7 +13,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, Subset
 import torchvision
 import torchvision.transforms as transforms
-from torchvision.models import resnet50
+from torchvision.models import efficientnet_b4
 from tqdm import tqdm
 from tabulate import tabulate
 import numpy as np
@@ -25,72 +25,79 @@ from cleanai import CoveragePruner, count_parameters
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS2',
-    'model_name': 'ResNet50',
-    'dataset_name': 'ImageNet',
+    'test_scenario': 'TS6',
+    'model_name': 'EfficientNetB4',
+    'dataset_name': 'Food101',
     'method': 'NC',  # Neuron Coverage
-    'checkpoint_dir': r'C:\source\checkpoints\TS2',
-    'dataset_dir': r'C:\source\downloaded_datasets\imagenet',
+    'checkpoint_dir': r'C:\source\checkpoints\TS6',
+    'dataset_dir': r'C:\source\downloaded_datasets\food101',
     'results_dir': os.path.join(os.path.dirname(__file__)),
-    'results_file': 'TS2_Results.json',
-    'pruning_ratio': 0.2,  # 20%
-    'global_pruning': False,
+    'results_file': 'TS6_Results.json',
+    'pruning_ratio': 0.1,  # 10%
+    'global_pruning': True,
     'iterative_steps': 1,
-    'fine_tune_epochs_base': 10,  # Reduced for ImageNet
+    'fine_tune_epochs_base': 10,
     'save_every_n_epochs': 2,
-    'batch_size': 256,
+    'batch_size': 16,  # Reduced from 32 to avoid memory bottleneck
     'learning_rate': 0.0001,  # Lower LR for fine-tuning after pruning
     'num_calibration_batches': 100,  # Number of batches for coverage calculation
     'device': 'cuda' if torch.cuda.is_available() else 'cpu'
 }
 
-CONFIG['fine_tune_epochs'] = CONFIG['fine_tune_epochs_base'] // 2
+CONFIG['fine_tune_epochs'] = 10
 
 def load_dataset():
-    """Load ImageNet validation dataset"""
+    """Load Food101 dataset"""
     print("\n" + "="*80)
-    print("LOADING IMAGENET VALIDATION DATASET")
+    print("LOADING FOOD101 DATASET")
     print("="*80)
     
     val_transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
+        transforms.Resize(400),
+        transforms.CenterCrop(380),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                            std=[0.229, 0.224, 0.225])
     ])
     
     train_transform = transforms.Compose([
-        transforms.RandomResizedCrop(224),
+        transforms.RandomResizedCrop(380),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                            std=[0.229, 0.224, 0.225])
     ])
     
-    val_dir = os.path.join(CONFIG['dataset_dir'], 'val')
-    
-    if not os.path.exists(val_dir):
-        print(f"\nERROR: ImageNet validation set not found at: {val_dir}")
-        print("Please run TS2_01_prepare_model.py first to set up the dataset.")
-        raise FileNotFoundError(f"ImageNet validation set not found: {val_dir}")
-    
-    test_dataset = torchvision.datasets.ImageFolder(
-        root=val_dir,
-        transform=val_transform
-    )
-    
-    # Use subset of validation for fine-tuning
-    train_size = min(len(test_dataset) // 5, 50000)  # Max 50k images for fine-tuning
-    indices = torch.randperm(len(test_dataset)).tolist()
-    train_dataset = torchvision.datasets.ImageFolder(root=val_dir, transform=train_transform)
-    train_dataset = Subset(train_dataset, indices[:train_size])
+    # Use torchvision.datasets.Food101
+    try:
+        test_dataset = torchvision.datasets.Food101(
+            root=CONFIG['dataset_dir'],
+            split='test',
+            download=True,
+            transform=val_transform
+        )
+        
+        train_dataset = torchvision.datasets.Food101(
+            root=CONFIG['dataset_dir'],
+            split='train',
+            download=True,
+            transform=train_transform
+        )
+        
+        # Use subset of training for fine-tuning
+        train_size = min(len(train_dataset) // 2, 5000)  # Max 5k images for fine-tuning
+        indices = torch.randperm(len(train_dataset)).tolist()
+        train_dataset = Subset(train_dataset, indices[:train_size])
+    except Exception as e:
+        print(f"\nError loading Food101 dataset: {e}")
+        print("Please run TS6_01_prepare_model.py first to set up the dataset.")
+        raise
     
     train_loader = DataLoader(
         train_dataset,
         batch_size=CONFIG['batch_size'],
         shuffle=True,
-        num_workers=2,
+        num_workers=4,
         pin_memory=True if CONFIG['device'] == 'cuda' else False
     )
     
@@ -98,19 +105,20 @@ def load_dataset():
         test_dataset,
         batch_size=CONFIG['batch_size'],
         shuffle=False,
-        num_workers=2,
+        num_workers=4,
         pin_memory=True if CONFIG['device'] == 'cuda' else False
     )
     
     # Create calibration loader (subset for coverage calculation)
     calibration_size = CONFIG['batch_size'] * CONFIG['num_calibration_batches']
-    calibration_indices = indices[:min(calibration_size, len(test_dataset))]
+    test_indices = torch.randperm(len(test_dataset)).tolist()
+    calibration_indices = test_indices[:min(calibration_size, len(test_dataset))]
     calibration_dataset = Subset(test_dataset, calibration_indices)
     calibration_loader = DataLoader(
         calibration_dataset,
         batch_size=CONFIG['batch_size'],
         shuffle=False,
-        num_workers=2,
+        num_workers=4,
         pin_memory=True if CONFIG['device'] == 'cuda' else False
     )
     
@@ -135,11 +143,12 @@ def load_finetuned_model():
     
     if not os.path.exists(best_checkpoint):
         raise FileNotFoundError(f"Baseline model not found: {best_checkpoint}\n"
-                              f"Please run TS2_01_prepare_model.py first.")
+                              f"Please run TS6_01_prepare_model.py first.")
     
-    # Create model architecture (1000 classes for ImageNet)
-    model = resnet50(weights=None)
-    # No need to modify - already has 1000 classes
+    # Create model architecture (101 classes for Food101)
+    model = efficientnet_b4(weights=None)
+    # Modify classifier for 101 classes
+    model.classifier[1] = nn.Linear(model.classifier[1].in_features, 101)
     
     # Load checkpoint
     checkpoint = torch.load(best_checkpoint, map_location=CONFIG['device'], weights_only=False)
@@ -165,7 +174,7 @@ def calculate_model_size(model):
     size_mb = (param_size + buffer_size) / (1024 ** 2)
     return size_mb
 
-def count_flops(model, input_size=(1, 3, 224, 224)):
+def count_flops(model, input_size=(1, 3, 380, 380)):
     """Estimate FLOPs for the model"""
     try:
         from thop import profile
@@ -217,7 +226,7 @@ def apply_coverage_pruning(model, calibration_loader):
     example_inputs = next(iter(calibration_loader))[0][:1].to(CONFIG['device'])
     
     # Protect final classification layer from pruning
-    ignored_layers = [model.fc]
+    ignored_layers = [model.classifier]
     
     # Use CoveragePruner wrapper (same as TS1)
     pruner = CoveragePruner(
@@ -326,13 +335,12 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
     # Restore best model
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
-        # Save best model (save full model for compatibility with quantization scripts)
+        # Save best model
         best_model_path = os.path.join(
             CONFIG['checkpoint_dir'],
             f"{CONFIG['model_name']}_{CONFIG['dataset_name']}_FTAP_{CONFIG['method']}_best.pth"
         )
         torch.save({
-            'model': model,  # Save full model for pruned models
             'model_state_dict': best_model_state,
             'test_accuracy': best_accuracy,
             'pruning_ratio': CONFIG['pruning_ratio']
@@ -462,7 +470,7 @@ def main():
         'model': CONFIG['model_name'],
         'dataset': CONFIG['dataset_name'],
         'method': 'Neuron Coverage',
-        'script': 'TS2_02_coverage_pruning',
+        'script': 'TS6_02_coverage_pruning',
         'pruning_config': {
             'ratio': CONFIG['pruning_ratio'],
             'global': CONFIG['global_pruning'],
@@ -510,3 +518,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

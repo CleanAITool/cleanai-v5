@@ -22,6 +22,11 @@ from .evaluation import (
     compare_models
 )
 
+from .quantization import (
+    ModelQuantizer,
+    quantize_model
+)
+
 __all__ = [
     # Model utilities
     'count_parameters',
@@ -38,4 +43,8 @@ __all__ = [
     'evaluate_with_loss',
     'measure_inference_time',
     'compare_models',
+    
+    # Quantization utilities
+    'ModelQuantizer',
+    'quantize_model',
 ]
