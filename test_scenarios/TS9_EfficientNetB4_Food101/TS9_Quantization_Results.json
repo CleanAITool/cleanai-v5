@@ -1,0 +1,233 @@
+{
+    "config": {
+        "checkpoint_dir": "C:\\source\\checkpoints\\TS9",
+        "dataset_dir": "C:\\source\\downloaded_datasets\\food101",
+        "results_file": "TS9_Quantization_Results.json",
+        "batch_size": 16,
+        "num_workers": 4,
+        "device": "cuda",
+        "eval_samples": 5000
+    },
+    "models": {
+        "Original_FT": {
+            "description": "Original Fine-tuned EfficientNetB4",
+            "checkpoint": "EfficientNetB4_Food101_FT_best.pth",
+            "is_pruned": false,
+            "original": {
+                "accuracy": 89.34,
+                "inference_time_ms": 4.216226996207724,
+                "model_size_mb": 68.35614013671875,
+                "total_parameters": 17729709,
+                "trainable_parameters": 17729709,
+                "memory_before": {
+                    "ram_mb": 959.203125,
+                    "gpu_allocated_mb": 68.61083984375,
+                    "gpu_reserved_mb": 86.0
+                },
+                "memory_after": {
+                    "ram_mb": 1328.98046875,
+                    "gpu_allocated_mb": 76.73583984375,
+                    "gpu_reserved_mb": 1070.0
+                }
+            },
+            "fp16_quantized": {
+                "accuracy": 88.3,
+                "inference_time_ms": 1.9803843936141656,
+                "model_size_mb": 34.29681396484375,
+                "total_parameters": 17729709,
+                "trainable_parameters": 17729709,
+                "memory_before": {
+                    "ram_mb": 1328.99609375,
+                    "gpu_allocated_mb": 42.369140625,
+                    "gpu_reserved_mb": 1074.0
+                },
+                "memory_after": {
+                    "ram_mb": 1643.63671875,
+                    "gpu_allocated_mb": 42.369140625,
+                    "gpu_reserved_mb": 1076.0
+                }
+            },
+            "improvements": {
+                "size_reduction_percent": 49.82628642248249,
+                "speedup": 2.128994254753334,
+                "accuracy_drop": 1.0400000000000063
+            }
+        },
+        "Coverage_Pruned_FT": {
+            "description": "Coverage Pruning + Fine-tuned",
+            "checkpoint": "EfficientNetB4_Food101_FTAP_NC_best.pth",
+            "is_pruned": true,
+            "original": {
+                "accuracy": 80.5,
+                "inference_time_ms": 5.452579381514569,
+                "model_size_mb": 49.74520683288574,
+                "total_parameters": 12814772,
+                "trainable_parameters": 12814772,
+                "memory_before": {
+                    "ram_mb": 1680.5703125,
+                    "gpu_allocated_mb": 58.3095703125,
+                    "gpu_reserved_mb": 64.0
+                },
+                "memory_after": {
+                    "ram_mb": 1645.18359375,
+                    "gpu_allocated_mb": 58.3095703125,
+                    "gpu_reserved_mb": 1300.0
+                }
+            },
+            "fp16_quantized": {
+                "accuracy": 80.46,
+                "inference_time_ms": 2.970223828237884,
+                "model_size_mb": 25.089445114135742,
+                "total_parameters": 12814772,
+                "trainable_parameters": 12814772,
+                "memory_before": {
+                    "ram_mb": 1645.18359375,
+                    "gpu_allocated_mb": 33.55322265625,
+                    "gpu_reserved_mb": 1302.0
+                },
+                "memory_after": {
+                    "ram_mb": 1635.76171875,
+                    "gpu_allocated_mb": 33.55322265625,
+                    "gpu_reserved_mb": 1304.0
+                }
+            },
+            "improvements": {
+                "size_reduction_percent": 49.56409529380121,
+                "speedup": 1.8357469661636137,
+                "accuracy_drop": 0.04000000000000625
+            }
+        },
+        "Wanda_Pruned_FT": {
+            "description": "Wanda Pruning + Fine-tuned",
+            "checkpoint": "EfficientNetB4_Food101_FTAP_W_best.pth",
+            "is_pruned": true,
+            "original": {
+                "accuracy": 86.02,
+                "inference_time_ms": 5.191286303559128,
+                "model_size_mb": 59.75344657897949,
+                "total_parameters": 15439010,
+                "trainable_parameters": 15439010,
+                "memory_before": {
+                    "ram_mb": 1693.19921875,
+                    "gpu_allocated_mb": 92.6044921875,
+                    "gpu_reserved_mb": 108.0
+                },
+                "memory_after": {
+                    "ram_mb": 1659.609375,
+                    "gpu_allocated_mb": 92.6044921875,
+                    "gpu_reserved_mb": 1436.0
+                }
+            },
+            "fp16_quantized": {
+                "accuracy": 86.04,
+                "inference_time_ms": 3.124381510578856,
+                "model_size_mb": 30.092679977416992,
+                "total_parameters": 15439010,
+                "trainable_parameters": 15439010,
+                "memory_before": {
+                    "ram_mb": 1659.609375,
+                    "gpu_allocated_mb": 62.8759765625,
+                    "gpu_reserved_mb": 1436.0
+                },
+                "memory_after": {
+                    "ram_mb": 1665.734375,
+                    "gpu_allocated_mb": 62.8759765625,
+                    "gpu_reserved_mb": 1438.0
+                }
+            },
+            "improvements": {
+                "size_reduction_percent": 49.63858706017601,
+                "speedup": 1.661540463602774,
+                "accuracy_drop": -0.020000000000010232
+            }
+        },
+        "Magnitude_Pruned_FT": {
+            "description": "Magnitude Pruning + Fine-tuned",
+            "checkpoint": "EfficientNetB4_Food101_FTAP_MAG_best.pth",
+            "is_pruned": true,
+            "original": {
+                "accuracy": 87.12,
+                "inference_time_ms": 3.297952364902107,
+                "model_size_mb": 62.09261894226074,
+                "total_parameters": 16050758,
+                "trainable_parameters": 16050758,
+                "memory_before": {
+                    "ram_mb": 1714.51171875,
+                    "gpu_allocated_mb": 70.966796875,
+                    "gpu_reserved_mb": 110.0
+                },
+                "memory_after": {
+                    "ram_mb": 1691.82421875,
+                    "gpu_allocated_mb": 70.966796875,
+                    "gpu_reserved_mb": 1144.0
+                }
+            },
+            "fp16_quantized": {
+                "accuracy": 87.22,
+                "inference_time_ms": 1.592373361392897,
+                "model_size_mb": 31.260831832885742,
+                "total_parameters": 16050758,
+                "trainable_parameters": 16050758,
+                "memory_before": {
+                    "ram_mb": 1691.82421875,
+                    "gpu_allocated_mb": 39.49560546875,
+                    "gpu_reserved_mb": 1144.0
+                },
+                "memory_after": {
+                    "ram_mb": 1731.328125,
+                    "gpu_allocated_mb": 39.49560546875,
+                    "gpu_reserved_mb": 1144.0
+                }
+            },
+            "improvements": {
+                "size_reduction_percent": 49.65451229886945,
+                "speedup": 2.071092398843754,
+                "accuracy_drop": -0.09999999999999432
+            }
+        },
+        "Taylor_Pruned_FT": {
+            "description": "Taylor Pruning + Fine-tuned",
+            "checkpoint": "EfficientNetB4_Food101_FTAP_TAY_best.pth",
+            "is_pruned": true,
+            "original": {
+                "accuracy": 87.68,
+                "inference_time_ms": 3.6382106493930424,
+                "model_size_mb": 59.59103202819824,
+                "total_parameters": 15393337,
+                "trainable_parameters": 15393337,
+                "memory_before": {
+                    "ram_mb": 1771.171875,
+                    "gpu_allocated_mb": 67.82373046875,
+                    "gpu_reserved_mb": 84.0
+                },
+                "memory_after": {
+                    "ram_mb": 1738.77734375,
+                    "gpu_allocated_mb": 67.82373046875,
+                    "gpu_reserved_mb": 1206.0
+                }
+            },
+            "fp16_quantized": {
+                "accuracy": 87.78,
+                "inference_time_ms": 1.728584571760528,
+                "model_size_mb": 30.009366989135742,
+                "total_parameters": 15393337,
+                "trainable_parameters": 15393337,
+                "memory_before": {
+                    "ram_mb": 1738.77734375,
+                    "gpu_allocated_mb": 39.6025390625,
+                    "gpu_reserved_mb": 1210.0
+                },
+                "memory_after": {
+                    "ram_mb": 1737.65234375,
+                    "gpu_allocated_mb": 39.6025390625,
+                    "gpu_reserved_mb": 1210.0
+                }
+            },
+            "improvements": {
+                "size_reduction_percent": 49.64113564112226,
+                "speedup": 2.104733959118702,
+                "accuracy_drop": -0.09999999999999432
+            }
+        }
+    }
+}

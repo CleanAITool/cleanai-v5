@@ -1,5 +1,5 @@
 """
-Test Scenario TS6 - Script 1: Prepare EfficientNet-B4 Model
+Test Scenario TS9 - Script 1: Prepare EfficientNet-B4 Model
 Downloads pretrained EfficientNet-B4, prepares Stanford Dogs dataset, and fine-tunes the model.
 """
 
@@ -23,14 +23,14 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS6',
+    'test_scenario': 'TS9',
     'model_name': 'EfficientNetB4',
     'dataset_name': 'Food101',
     'model_dir': r'C:\source\downloaded_models',
     'dataset_dir': r'C:\source\downloaded_datasets\food101',
-    'checkpoint_dir': r'C:\source\checkpoints\TS6',
+    'checkpoint_dir': r'C:\source\checkpoints\TS9',
     'results_dir': os.path.join(os.path.dirname(__file__)),
-    'results_file': 'TS6_Results.json',
+    'results_file': 'TS9_Results.json',
     'fine_tune_epochs': 10,  # Reduced from 15 to save time
     'save_every_n_epochs': 5,
     'batch_size': 16,  # Reduced from 32 to avoid memory bottleneck
@@ -390,7 +390,7 @@ def main():
         'test_scenario': CONFIG['test_scenario'],
         'model': CONFIG['model_name'],
         'dataset': CONFIG['dataset_name'],
-        'script': 'TS6_01_prepare_model',
+        'script': 'TS9_01_prepare_model',
         'pretrained': {
             'accuracy': pretrained_accuracy,
             'size_mb': pretrained_size,

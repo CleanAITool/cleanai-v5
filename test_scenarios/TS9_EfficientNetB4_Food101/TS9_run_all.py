@@ -1,5 +1,5 @@
 """
-Test Scenario TS6 - Run All Scripts
+Test Scenario TS9 - Run All Scripts
 Executes all test scenario scripts in sequence.
 """
 
@@ -10,15 +10,15 @@ import time
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS6',
+    'test_scenario': 'TS9',
     'script_dir': os.path.dirname(__file__),
     'scripts': [
-        'TS6_01_prepare_model.py',
-        'TS6_02_coverage_pruning.py',
-        'TS6_03_wanda_pruning.py',
-        'TS6_04_magnitude_pruning.py',
-        'TS6_05_taylor_pruning.py',
-        'TS6_compare_results.py'
+        'TS9_01_prepare_model.py',
+        'TS9_02_coverage_pruning.py',
+        'TS9_03_wanda_pruning.py',
+        'TS9_04_magnitude_pruning.py',
+        'TS9_05_taylor_pruning.py',
+        'TS9_compare_results.py'
     ]
 }
 

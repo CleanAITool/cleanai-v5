@@ -1,4 +1,4 @@
-# Quick Start - Test Scenario TS6: EfficientNet-B4 on Food101
+# Quick Start - Test Scenario TS9: EfficientNet-B4 on Food101
 
 ## Prerequisites
 ```bash
@@ -13,7 +13,7 @@ Dataset location: `C:\source\downloaded_datasets\food101\`
 
 ### Option 1: Run All Scripts
 ```bash
-python test_scenarios/TS5_EfficientNetB4_StanfordDogs/TS5_run_all.py
+python test_scenarios/TS9_EfficientNetB4_Food101/TS9_run_all.py
 ```
 
 ### Option 2: Run Scripts Individually
@@ -63,7 +63,7 @@ Displays comparison of all methods (Coverage, Wanda, Magnitude, and Taylor).
   - **Model Size (MB)** (~10% reduction expected)
   - **FLOPs** (~10% reduction expected)
   - **Average Inference Time (ms)**
-- Results JSON file: `TS6_Results.json`
+- Results JSON file: `TS9_Results.json`
 
 ## Notes
 - **15 epochs** fine-tuning on baseline model

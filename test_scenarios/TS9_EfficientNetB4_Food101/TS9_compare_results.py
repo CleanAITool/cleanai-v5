@@ -1,5 +1,5 @@
 """
-Test Scenario TS6 - Compare Results
+Test Scenario TS9 - Compare Results
 Compares results from all pruning methods (Neuron Coverage, Wanda, Magnitude, and Taylor).
 """
 
@@ -10,9 +10,9 @@ from tabulate import tabulate
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS6',
+    'test_scenario': 'TS9',
     'results_dir': os.path.dirname(__file__),
-    'results_file': 'TS6_Results.json'
+    'results_file': 'TS9_Results.json'
 }
 
 def load_results():
@@ -22,11 +22,11 @@ def load_results():
     if not os.path.exists(results_file):
         print(f"Error: Results file not found: {results_file}")
         print("Please run the test scenarios first:")
-        print("  1. TS6_01_prepare_model.py")
-        print("  2. TS6_02_coverage_pruning.py")
-        print("  3. TS6_03_wanda_pruning.py")
-        print("  4. TS6_04_magnitude_pruning.py")
-        print("  5. TS6_05_taylor_pruning.py")
+        print("  1. TS9_01_prepare_model.py")
+        print("  2. TS9_02_coverage_pruning.py")
+        print("  3. TS9_03_wanda_pruning.py")
+        print("  4. TS9_04_magnitude_pruning.py")
+        print("  5. TS9_05_taylor_pruning.py")
         return None
     
     with open(results_file, 'r') as f:
@@ -37,7 +37,7 @@ def load_results():
 def print_summary_table(results):
     """Print comprehensive comparison table"""
     print("\n" + "="*110)
-    print("TEST SCENARIO TS6: COMPREHENSIVE COMPARISON")
+    print("TEST SCENARIO TS9: COMPREHENSIVE COMPARISON")
     print("="*110)
     
     # Check which results are available

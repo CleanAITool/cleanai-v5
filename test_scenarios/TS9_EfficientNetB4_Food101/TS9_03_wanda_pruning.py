@@ -1,5 +1,5 @@
 """
-Test Scenario TS6 - Script 3: Wanda Pruning
+Test Scenario TS9 - Script 3: Wanda Pruning
 Loads fine-tuned EfficientNet-B4, applies Wanda pruning, and fine-tunes the pruned model.
 """
 
@@ -25,14 +25,14 @@ from cleanai import CoveragePruner, count_parameters
 
 # Configuration
 CONFIG = {
-    'test_scenario': 'TS6',
+    'test_scenario': 'TS9',
     'model_name': 'EfficientNetB4',
     'dataset_name': 'Food101',
     'method': 'W',  # Wanda
-    'checkpoint_dir': r'C:\source\checkpoints\TS6',
+    'checkpoint_dir': r'C:\source\checkpoints\TS9',
     'dataset_dir': r'C:\source\downloaded_datasets\food101',
     'results_dir': os.path.join(os.path.dirname(__file__)),
-    'results_file': 'TS6_Results.json',
+    'results_file': 'TS9_Results.json',
     'pruning_ratio': 0.1,  # 10%
     'global_pruning': True,
     'iterative_steps': 1,
@@ -90,7 +90,7 @@ def load_dataset():
         train_dataset = Subset(train_dataset, indices[:train_size])
     except Exception as e:
         print(f"\nError loading Food101 dataset: {e}")
-        print("Please run TS6_01_prepare_model.py first to set up the dataset.")
+        print("Please run TS9_01_prepare_model.py first to set up the dataset.")
         raise
     
     train_loader = DataLoader(
@@ -143,7 +143,7 @@ def load_finetuned_model():
     
     if not os.path.exists(best_checkpoint):
         raise FileNotFoundError(f"Baseline model not found: {best_checkpoint}\n"
-                              f"Please run TS6_01_prepare_model.py first.")
+                              f"Please run TS9_01_prepare_model.py first.")
     
     # Create model architecture (101 classes for Food101)
     model = efficientnet_b4(weights=None)
@@ -318,6 +318,7 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
                 f"{CONFIG['model_name']}_{CONFIG['dataset_name']}_FTAP_{CONFIG['method']}_epoch{epoch+1}.pth"
             )
             torch.save({
+                'model': model,
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
@@ -340,6 +341,7 @@ def fine_tune_pruned_model(model, train_loader, test_loader):
             f"{CONFIG['model_name']}_{CONFIG['dataset_name']}_FTAP_{CONFIG['method']}_best.pth"
         )
         torch.save({
+            'model': model,
             'model_state_dict': best_model_state,
             'test_accuracy': best_accuracy,
             'pruning_ratio': CONFIG['pruning_ratio']
@@ -469,7 +471,7 @@ def main():
         'model': CONFIG['model_name'],
         'dataset': CONFIG['dataset_name'],
         'method': 'Wanda',
-        'script': 'TS6_03_wanda_pruning',
+        'script': 'TS9_03_wanda_pruning',
         'pruning_config': {
             'ratio': CONFIG['pruning_ratio'],
             'global': CONFIG['global_pruning'],

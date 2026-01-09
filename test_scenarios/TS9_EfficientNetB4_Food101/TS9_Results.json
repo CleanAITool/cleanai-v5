@@ -1,148 +1,148 @@
 {
     "prepare_model": {
-        "test_scenario": "TS6",
+        "test_scenario": "TS9",
         "model": "EfficientNetB4",
         "dataset": "Food101",
-        "script": "TS6_01_prepare_model",
+        "script": "TS9_01_prepare_model",
         "pretrained": {
-            "accuracy": 0.8871287128712871,
+            "accuracy": 1.1722772277227722,
             "size_mb": 68.1118049621582,
-            "inference_time_ms": 0.6027776108579291,
+            "inference_time_ms": 0.5961953744320571,
             "flops": 4609831832.0
         },
         "finetuned": {
-            "accuracy": 89.2,
+            "accuracy": 89.37821782178217,
             "size_mb": 68.11670303344727,
-            "inference_time_ms": 0.5877764070992835,
+            "inference_time_ms": 0.6114144522302735,
             "flops": 4609831832.0,
             "epochs": 10
         },
         "checkpoints": {
-            "best": "C:\\source\\checkpoints\\TS6\\EfficientNetB4_Food101_FT_best.pth",
-            "final": "C:\\source\\checkpoints\\TS6\\EfficientNetB4_Food101_FT_epoch10.pth"
+            "best": "C:\\source\\checkpoints\\TS9\\EfficientNetB4_Food101_FT_best.pth",
+            "final": "C:\\source\\checkpoints\\TS9\\EfficientNetB4_Food101_FT_epoch10.pth"
         }
     },
     "coverage_pruning": {
-        "test_scenario": "TS6",
+        "test_scenario": "TS9",
         "model": "EfficientNetB4",
         "dataset": "Food101",
         "method": "Neuron Coverage",
-        "script": "TS6_02_coverage_pruning",
+        "script": "TS9_02_coverage_pruning",
         "pruning_config": {
             "ratio": 0.1,
             "global": true,
             "iterative_steps": 1
         },
         "original": {
-            "accuracy": 89.2,
+            "accuracy": 89.37821782178217,
             "size_mb": 68.1118049621582,
-            "inference_time_ms": 0.5975000612187642,
+            "inference_time_ms": 0.5875033260977215,
             "flops": 4609831832.0
         },
         "pruned": {
-            "accuracy": 0.998019801980198,
-            "size_mb": 49.447715759277344,
-            "inference_time_ms": 5.386332353132295,
-            "flops": 3703812267.0
+            "accuracy": 1.1762376237623762,
+            "size_mb": 49.32054138183594,
+            "inference_time_ms": 5.412163313164449,
+            "flops": 3667507716.0
         },
         "final": {
-            "accuracy": 80.95049504950495,
-            "size_mb": 49.447715759277344,
-            "inference_time_ms": 5.323025321869853,
-            "flops": 3703812267.0,
+            "accuracy": 80.63366336633663,
+            "size_mb": 49.32054138183594,
+            "inference_time_ms": 5.3258252302402935,
+            "flops": 3667507716.0,
             "fine_tune_epochs": 10
         }
     },
     "wanda_pruning": {
-        "test_scenario": "TS6",
+        "test_scenario": "TS9",
         "model": "EfficientNetB4",
         "dataset": "Food101",
         "method": "Wanda",
-        "script": "TS6_03_wanda_pruning",
+        "script": "TS9_03_wanda_pruning",
         "pruning_config": {
             "ratio": 0.1,
             "global": true,
             "iterative_steps": 1
         },
         "original": {
-            "accuracy": 89.2,
+            "accuracy": 89.37821782178217,
             "size_mb": 68.1118049621582,
-            "inference_time_ms": 0.5935333041619318,
+            "inference_time_ms": 0.5992695151287366,
             "flops": 4609831832.0
         },
         "pruned": {
-            "accuracy": 1.6712871287128712,
-            "size_mb": 59.351226806640625,
-            "inference_time_ms": 5.260483676153622,
-            "flops": 4052805577.0
+            "accuracy": 3.2,
+            "size_mb": 59.33002471923828,
+            "inference_time_ms": 5.305531594555464,
+            "flops": 4041151854.0
         },
         "final": {
-            "accuracy": 85.93267326732673,
-            "size_mb": 59.351226806640625,
-            "inference_time_ms": 5.320236860686575,
-            "flops": 4052805577.0,
+            "accuracy": 85.86138613861387,
+            "size_mb": 59.33002471923828,
+            "inference_time_ms": 5.293116388704446,
+            "flops": 4041151854.0,
             "fine_tune_epochs": 10
         }
     },
     "magnitude_pruning": {
-        "test_scenario": "TS6",
+        "test_scenario": "TS9",
         "model": "EfficientNetB4",
         "dataset": "Food101",
         "method": "Magnitude",
-        "script": "TS6_04_magnitude_pruning",
+        "script": "TS9_04_magnitude_pruning",
         "pruning_config": {
             "ratio": 0.1,
             "global": true,
             "iterative_steps": 1
         },
         "original": {
-            "accuracy": 89.2,
+            "accuracy": 89.37821782178217,
             "size_mb": 68.1118049621582,
-            "inference_time_ms": 0.5921451746473742,
+            "inference_time_ms": 0.6249597493117939,
             "flops": 4609831832.0
         },
         "pruned": {
-            "accuracy": 2.887128712871287,
-            "size_mb": 61.658748626708984,
-            "inference_time_ms": 0.5888330872259689,
-            "flops": 3906901029.0
+            "accuracy": 2.0554455445544555,
+            "size_mb": 61.665069580078125,
+            "inference_time_ms": 0.6080830659648903,
+            "flops": 3905998413.0
         },
         "final": {
-            "accuracy": 86.78415841584159,
-            "size_mb": 61.658748626708984,
-            "inference_time_ms": 0.5796660702767592,
-            "flops": 3906901029.0,
+            "accuracy": 87.12475247524752,
+            "size_mb": 61.665069580078125,
+            "inference_time_ms": 0.5877242105682112,
+            "flops": 3905998413.0,
             "fine_tune_epochs": 10
         }
     },
     "taylor_pruning": {
-        "test_scenario": "TS6",
+        "test_scenario": "TS9",
         "model": "EfficientNetB4",
         "dataset": "Food101",
         "method": "Taylor",
-        "script": "TS6_05_taylor_pruning",
+        "script": "TS9_05_taylor_pruning",
         "pruning_config": {
             "ratio": 0.1,
             "global": true,
             "iterative_steps": 1
         },
         "original": {
-            "accuracy": 89.2,
+            "accuracy": 89.37821782178217,
             "size_mb": 68.1118049621582,
-            "inference_time_ms": 0.5861733762277237,
+            "inference_time_ms": 0.5962368409946193,
             "flops": 4609831832.0
         },
         "pruned": {
-            "accuracy": 19.72673267326733,
-            "size_mb": 59.14432907104492,
-            "inference_time_ms": 0.5869464718744376,
-            "flops": 4106878944.0
+            "accuracy": 35.691089108910894,
+            "size_mb": 59.1599006652832,
+            "inference_time_ms": 0.605564750848955,
+            "flops": 4108350746.0
         },
         "final": {
-            "accuracy": 87.9920792079208,
-            "size_mb": 59.14432907104492,
-            "inference_time_ms": 0.5904603147899297,
-            "flops": 4106878944.0,
+            "accuracy": 87.96831683168317,
+            "size_mb": 59.1599006652832,
+            "inference_time_ms": 0.5964946244773116,
+            "flops": 4108350746.0,
             "fine_tune_epochs": 10
         }
     }

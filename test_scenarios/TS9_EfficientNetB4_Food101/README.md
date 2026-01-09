@@ -1,4 +1,4 @@
-# Test Scenario TS6: EfficientNet-B4 on Food101
+# Test Scenario TS9: EfficientNet-B4 on Food101
 
 ## Overview
 This test scenario evaluates pruning methods on EfficientNet-B4 using the Food101 dataset.
@@ -14,7 +14,7 @@ This test scenario evaluates pruning methods on EfficientNet-B4 using the Food10
 ## Directory Structure
 - **Model Download**: `C:\source\downloaded_models\`
 - **Dataset Download**: `C:\source\downloaded_datasets\food101\`
-- **Checkpoints**: `C:\source\checkpoints\TS6\`
+- **Checkpoints**: `C:\source\checkpoints\TS9\`
 - **Reports**: Saved in checkpoint directories
 
 ## Dataset Setup
@@ -28,13 +28,13 @@ Food101 dataset will be automatically downloaded using torchvision.datasets:
 The dataset will be automatically downloaded to: `C:\source\downloaded_datasets\food101\`
 
 ## Scripts
-1. **TS5_01_prepare_model.py**: Loads pretrained EfficientNet-B4, fine-tunes on Stanford Dogs
-2. **TS5_02_coverage_pruning.py**: Applies Neuron Coverage pruning and fine-tunes
-3. **TS5_03_wanda_pruning.py**: Applies Wanda pruning and fine-tunes
-4. **TS5_04_magnitude_pruning.py**: Applies Magnitude-based pruning (Torch-Pruning baseline) and fine-tunes
-5. **TS5_05_taylor_pruning.py**: Applies Taylor gradient-based pruning (Torch-Pruning) and fine-tunes
-6. **TS5_compare_results.py**: Compares results from all methods
-7. **TS5_run_all.py**: Runs all scripts in sequence
+1. **TS9_01_prepare_model.py**: Loads pretrained EfficientNet-B4, fine-tunes on Stanford Dogs
+2. **TS9_02_coverage_pruning.py**: Applies Neuron Coverage pruning and fine-tunes
+3. **TS9_03_wanda_pruning.py**: Applies Wanda pruning and fine-tunes
+4. **TS9_04_magnitude_pruning.py**: Applies Magnitude-based pruning (Torch-Pruning baseline) and fine-tunes
+5. **TS9_05_taylor_pruning.py**: Applies Taylor gradient-based pruning (Torch-Pruning) and fine-tunes
+6. **TS9_compare_results.py**: Compares results from all methods
+7. **TS9_run_all.py**: Runs all scripts in sequence
 
 ## Checkpoint Naming Convention
 - Baseline model: `EfficientNetB4_Food101_FT_best.pth`
@@ -44,7 +44,7 @@ The dataset will be automatically downloaded to: `C:\source\downloaded_datasets\
 - After Taylor pruning + FT: `EfficientNetB4_Food101_FTAP_TAY_epoch{N}.pth`
 
 ## Results
-Results are saved to: `test_scenarios/TS5_EfficientNetB4_StanfordDogs/TS5_Results.json`
+Results are saved to: `test_scenarios/TS9_EfficientNetB4_Food101/TS9_Results.json`
 
 ## Performance
 - **Baseline Accuracy**: ~75-85% (EfficientNet-B4 fine-tuned on Food101)
