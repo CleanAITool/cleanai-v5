@@ -1,0 +1,163 @@
+﻿========================================
+   WINDOWS DONANIM BILGILERI RAPORU
+========================================
+
+=== ISLETIM SISTEMI ===
+Isletim Sistemi: Microsoft Windows 11 Pro
+Versiyon: 10.0.26100
+Mimari: 64 bit
+Kurulum Tarihi: 01/14/2025 20:00:47
+Son Acilis: 01/09/2026 08:16:27
+Sistem Dizini: C:\Windows\system32
+
+=== BILGISAYAR BILGILERI ===
+Bilgisayar Adi: DESKTOP-EN9JDE5
+Uretici: Dell Inc.
+Model: Precision 3680
+Sistem Tipi: x64-based PC
+Domain: WORKGROUP
+
+=== ISLEMCI (CPU) ===
+Islemci Adi: Intel(R) Core(TM) i9-14900
+Uretici: GenuineIntel
+Cekirdek Sayisi: 24
+Mantiksal Islemci: 32
+Maksimum Hiz: 2000 MHz
+Mevcut Hiz: 2000 MHz
+L2 Onbellek: 32768 KB
+L3 Onbellek: 36864 KB
+Soket Tanimi: U3E1
+
+=== BELLEK (RAM) ===
+Toplam Fiziksel Bellek: 63.69 GB
+
+Bellek Slot 1:
+  Kapasite: 16 GB
+  Hiz: 5600 MHz
+  Uretici: 80AD000080AD
+  Part Number: HMCG78AGBUA084N
+  Seri No: 562C1CB8
+  Form Faktor: 8
+  Bellek Tipi: 0
+
+Bellek Slot 2:
+  Kapasite: 16 GB
+  Hiz: 5600 MHz
+  Uretici: 80AD000080AD
+  Part Number: HMCG78AGBUA084N
+  Seri No: 562C1CB6
+  Form Faktor: 8
+  Bellek Tipi: 0
+
+Bellek Slot 3:
+  Kapasite: 16 GB
+  Hiz: 5600 MHz
+  Uretici: 80AD000080AD
+  Part Number: HMCG78AGBUA084N
+  Seri No: 562C1DF2
+  Form Faktor: 8
+  Bellek Tipi: 0
+
+Bellek Slot 4:
+  Kapasite: 16 GB
+  Hiz: 5600 MHz
+  Uretici: 80AD000080AD
+  Part Number: HMCG78AGBUA084N
+  Seri No: 562C1DF0
+  Form Faktor: 8
+  Bellek Tipi: 0
+
+=== ANAKART (MOTHERBOARD) ===
+Uretici: Dell Inc.
+Urun: 0VTKY7
+Seri No: /3Z7SC64/CNFCW0046E00Z1/
+Versiyon: A00
+
+=== BIOS ===
+Uretici: Dell Inc.
+Versiyon: DELL   - 2
+Seri No: 3Z7SC64
+Tarih: 09/04/2025 03:00:00
+
+=== DISKLER (STORAGE) ===
+
+Disk: NVMe 3500 Micron 1024GB
+  Model: NVMe 3500 Micron 1024GB
+  Boyut: 953.86 GB
+  Arayuz: SCSI
+  Bolum Sayisi: 4
+  Seri No: 0000_0000_0000_0001_00A0_7524_4B31_27A7.
+  Durum: OK
+
+=== BOLUMLER (PARTITIONS) ===
+
+Surucu: C:
+  Dosya Sistemi: NTFS
+  Toplam Boyut: 951.18 GB
+  Bos Alan: 175.3 GB
+  Kullanilan: 775.88 GB
+  Kullanim Orani: 81.57%
+  Etiket: OS
+
+=== EKRAN KARTI (GPU) ===
+
+Ekran Karti: NVIDIA RTX 4000 Ada Generation
+  Uretici: NVIDIA
+  Adanmis GPU Bellegi: 20475 MB (20 GB)
+  Paylasilan GPU Bellegi: 31.8 GB (Sistem RAM)
+  Toplam GPU Bellegi: 51.8 GB
+  Sicaklik: 24 C
+  Surucu Versiyonu: 32.0.15.7344
+  Durum: OK
+
+Ekran Karti: Intel(R) UHD Graphics 770
+  Uretici: Intel Corporation
+  Adanmis GPU Bellegi: 2 GB
+  Paylasilan GPU Bellegi: 31.8 GB (Sistem RAM)
+  Toplam GPU Bellegi: 33.8 GB
+  Surucu Versiyonu: 32.0.101.7026
+  Mevcut Cozunurluk: 1920 x 1080
+  Yenileme Hizi: 60 Hz
+  Durum: OK
+
+=== MONITOR ===
+Uretici: FUS
+Model: E22T-7 Pro
+Seri No: YV9U162542
+
+=== AG ADAPTORLERI ===
+
+Adaptor: Intel(R) Ethernet Connection (17) I219-LM
+  MAC Adresi: 4C:D7:17:A5:D2:63
+  Hiz: 1000000000
+  Uretici: Intel
+  Durum: 2
+  IP Adresi: 172.19.108.214, fe80::ba96:1f44:60f4:df29
+  Subnet Mask: 255.255.240.0, 64
+  Gateway: 172.19.96.2
+  DNS Sunucular: 193.140.128.28, 193.140.141.18, 193.140.141.8
+  DHCP Aktif: True
+
+=== SES KARTI ===
+Ses Cihazi: NVIDIA High Definition Audio
+  Uretici: NVIDIA
+  Durum: OK
+
+Ses Cihazi: Realtek Audio
+  Uretici: Realtek
+  Durum: OK
+
+=== USB CIHAZLARI ===
+=== PIL BILGILERI (Laptop icin) ===
+Pil bulunamadi (Masaustu bilgisayar)
+
+=== PERFORMANS BILGILERI ===
+CPU kullanim bilgisi alinamadi
+RAM kullanim bilgisi alinamadi
+
+=== GUC KAYNAGI ===
+Guc kaynagi bilgisi alinamadi
+
+========================================
+          RAPOR TAMAMLANDI
+========================================
